@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -96,7 +95,6 @@ public class OrderDetailsActivity extends BaseActivity {
         btTake.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.e("====", "====" + customerId + "===" + states);
                 if (customerId > 0) {// 开始施工
                     if (states == 0) {
                         startProject(projectId);
@@ -146,27 +144,27 @@ public class OrderDetailsActivity extends BaseActivity {
     private void setTop(ProjectDetailsResponse.DataBean data) {
         projectTitle = data.getTitle();
         tvTitle.setText(data.getTitle());
-        List<ProjectDetailsResponse.DataBean.CadImgsBean> cadImgs = data.getCadImgs();
+        List<ProjectDetailsResponse.DataBean.CadImgListBean> cadImgs = data.getCadImgList();
         if (cadImgs != null && !cadImgs.isEmpty()) {
-            String cadUrl = data.getCadImgs().get(0).getImgUrl();
+            String cadUrl = cadImgs.get(0).getImgUrl();
             if (!TextUtils.isEmpty(cadUrl)) {
                 Glide.with(this).load(cadUrl).placeholder(R.drawable.place_holder).into(ivCad);
             }
         }else {
             ivCad.setImageResource(R.drawable.place_holder);
         }
-        List<ProjectDetailsResponse.DataBean.BudgetImgsBean> budgetImgs = data.getBudgetImgs();
+        List<ProjectDetailsResponse.DataBean.BudgetImgListBean> budgetImgs = data.getBudgetImgList();
         if (budgetImgs != null && !budgetImgs.isEmpty()) {
-            String budgetUrl = data.getBudgetImgs().get(0).getImgUrl();
+            String budgetUrl = budgetImgs.get(0).getImgUrl();
             if (!TextUtils.isEmpty(budgetUrl)) {
                 Glide.with(this).load(budgetUrl).placeholder(R.drawable.place_holder).into(ivInfo);
             }
         } else {
             ivInfo.setImageResource(R.drawable.place_holder);
         }
-        List<ProjectDetailsResponse.DataBean.StateImgsBean> stateImgs = data.getStateImgs();
+        List<ProjectDetailsResponse.DataBean.StateImgListBean> stateImgs = data.getStateImgList();
         if (stateImgs != null && !stateImgs.isEmpty()) {
-            String stateUrl = data.getStateImgs().get(0).getImgUrl();
+            String stateUrl = stateImgs.get(0).getImgUrl();
             if (!TextUtils.isEmpty(stateUrl)) {
                 Glide.with(this).load(stateUrl).placeholder(R.drawable.place_holder).into(ivTable);
             }

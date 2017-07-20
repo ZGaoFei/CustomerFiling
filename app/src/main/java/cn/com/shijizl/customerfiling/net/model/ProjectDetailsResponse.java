@@ -2,11 +2,10 @@ package cn.com.shijizl.customerfiling.net.model;
 
 import java.util.List;
 
-
 public class ProjectDetailsResponse {
 
     private int code;
-    private String message;
+    private Object message;
     private DataBean data;
 
     public int getCode() {
@@ -17,11 +16,11 @@ public class ProjectDetailsResponse {
         this.code = code;
     }
 
-    public String getMessage() {
+    public Object getMessage() {
         return message;
     }
 
-    public void setMessage(String message) {
+    public void setMessage(Object message) {
         this.message = message;
     }
 
@@ -40,18 +39,9 @@ public class ProjectDetailsResponse {
         private int customerId;
         private int status;
         private long startTime;
-        private List<BudgetImgsBean> budgetImgs;
-
-        public long getStartTime() {
-            return startTime;
-        }
-
-        public void setStartTime(long startTime) {
-            this.startTime = startTime;
-        }
-
-        private List<CadImgsBean> cadImgs;
-        private List<StateImgsBean> stateImgs;
+        private List<BudgetImgListBean> budgetImgList;
+        private List<CadImgListBean> cadImgList;
+        private List<StateImgListBean> stateImgList;
 
         public int getId() {
             return id;
@@ -85,35 +75,61 @@ public class ProjectDetailsResponse {
             this.status = status;
         }
 
-        public List<BudgetImgsBean> getBudgetImgs() {
-            return budgetImgs;
+        public long getStartTime() {
+            return startTime;
         }
 
-        public void setBudgetImgs(List<BudgetImgsBean> budgetImgs) {
-            this.budgetImgs = budgetImgs;
+        public void setStartTime(long startTime) {
+            this.startTime = startTime;
         }
 
-        public List<CadImgsBean> getCadImgs() {
-            return cadImgs;
+        public List<BudgetImgListBean> getBudgetImgList() {
+            return budgetImgList;
         }
 
-        public void setCadImgs(List<CadImgsBean> cadImgs) {
-            this.cadImgs = cadImgs;
+        public void setBudgetImgList(List<BudgetImgListBean> budgetImgList) {
+            this.budgetImgList = budgetImgList;
         }
 
-        public List<StateImgsBean> getStateImgs() {
-            return stateImgs;
+        public List<CadImgListBean> getCadImgList() {
+            return cadImgList;
         }
 
-        public void setStateImgs(List<StateImgsBean> stateImgs) {
-            this.stateImgs = stateImgs;
+        public void setCadImgList(List<CadImgListBean> cadImgList) {
+            this.cadImgList = cadImgList;
         }
 
-        public static class BudgetImgsBean {
+        public List<StateImgListBean> getStateImgList() {
+            return stateImgList;
+        }
 
+        public void setStateImgList(List<StateImgListBean> stateImgList) {
+            this.stateImgList = stateImgList;
+        }
+
+        public static class BudgetImgListBean {
+
+            private int id;
+            private int projectId;
             private String imgUrl;
             private int width;
             private int height;
+
+            public int getId() {
+                return id;
+            }
+
+            public void setId(int id) {
+                this.id = id;
+            }
+
+            public int getProjectId() {
+                return projectId;
+            }
+
+            public void setProjectId(int projectId) {
+                this.projectId = projectId;
+            }
 
             public String getImgUrl() {
                 return imgUrl;
@@ -140,11 +156,29 @@ public class ProjectDetailsResponse {
             }
         }
 
-        public static class CadImgsBean {
+        public static class CadImgListBean {
 
+            private int id;
+            private int projectId;
             private String imgUrl;
             private int width;
             private int height;
+
+            public int getId() {
+                return id;
+            }
+
+            public void setId(int id) {
+                this.id = id;
+            }
+
+            public int getProjectId() {
+                return projectId;
+            }
+
+            public void setProjectId(int projectId) {
+                this.projectId = projectId;
+            }
 
             public String getImgUrl() {
                 return imgUrl;
@@ -171,11 +205,29 @@ public class ProjectDetailsResponse {
             }
         }
 
-        public static class StateImgsBean {
+        public static class StateImgListBean {
 
+            private int id;
+            private int projectId;
             private String imgUrl;
             private int width;
             private int height;
+
+            public int getId() {
+                return id;
+            }
+
+            public void setId(int id) {
+                this.id = id;
+            }
+
+            public int getProjectId() {
+                return projectId;
+            }
+
+            public void setProjectId(int projectId) {
+                this.projectId = projectId;
+            }
 
             public String getImgUrl() {
                 return imgUrl;

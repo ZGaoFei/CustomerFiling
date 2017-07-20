@@ -2,7 +2,6 @@ package cn.com.shijizl.customerfiling.order;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -128,17 +127,19 @@ public class UpdateOrderActivity extends BaseActivity {
                     addOrUpadteProject(trim, cadString, infoString, tableString);
                 }
 
-                String name = etName.getText().toString().trim();
-                String phone = etPhone.getText().toString().trim();
-                String address = etAddress.getText().toString().trim();
-                if (TextUtils.isEmpty(name)) {
-                    Toast.makeText(UpdateOrderActivity.this, "姓名不能为空", Toast.LENGTH_SHORT).show();
-                } else if (TextUtils.isEmpty(phone)) {
-                    Toast.makeText(UpdateOrderActivity.this, "电话不能为空", Toast.LENGTH_SHORT).show();
-                } else if (TextUtils.isEmpty(address)) {
-                    Toast.makeText(UpdateOrderActivity.this, "地址不能为空", Toast.LENGTH_SHORT).show();
-                } else {
-                    addCustomerInfo(projectId, String.valueOf(customerId), name, phone, address);
+                if(customerId > 0) {
+                    String name = etName.getText().toString().trim();
+                    String phone = etPhone.getText().toString().trim();
+                    String address = etAddress.getText().toString().trim();
+                    if (TextUtils.isEmpty(name)) {
+                        Toast.makeText(UpdateOrderActivity.this, "姓名不能为空", Toast.LENGTH_SHORT).show();
+                    } else if (TextUtils.isEmpty(phone)) {
+                        Toast.makeText(UpdateOrderActivity.this, "电话不能为空", Toast.LENGTH_SHORT).show();
+                    } else if (TextUtils.isEmpty(address)) {
+                        Toast.makeText(UpdateOrderActivity.this, "地址不能为空", Toast.LENGTH_SHORT).show();
+                    } else {
+                        addCustomerInfo(projectId, String.valueOf(customerId), name, phone, address);
+                    }
                 }
             }
         });
@@ -187,23 +188,26 @@ public class UpdateOrderActivity extends BaseActivity {
 
     private void setTop(ProjectDetailsResponse.DataBean data) {
         etTitle.setText(data.getTitle());
-        List<ProjectDetailsResponse.DataBean.CadImgsBean> cadImgs = data.getCadImgs();
+        List<ProjectDetailsResponse.DataBean.CadImgListBean> cadImgs = data.getCadImgList();
         if (cadImgs != null && !cadImgs.isEmpty()) {
-            String cadUrl = data.getCadImgs().get(0).getImgUrl();
+            cad = getImageResponse(cadImgs.get(0).getImgUrl(), cadImgs.get(0).getWidth(), cadImgs.get(0).getHeight());
+            String cadUrl = cadImgs.get(0).getImgUrl();
             if (!TextUtils.isEmpty(cadUrl)) {
                 Glide.with(this).load(cadUrl).into(ivCad);
             }
         }
-        List<ProjectDetailsResponse.DataBean.BudgetImgsBean> budgetImgs = data.getBudgetImgs();
+        List<ProjectDetailsResponse.DataBean.BudgetImgListBean> budgetImgs = data.getBudgetImgList();
         if (budgetImgs != null && !budgetImgs.isEmpty()) {
-            String budgetUrl = data.getBudgetImgs().get(0).getImgUrl();
+            info = getImageResponse(budgetImgs.get(0).getImgUrl(), budgetImgs.get(0).getWidth(), budgetImgs.get(0).getHeight());
+            String budgetUrl = budgetImgs.get(0).getImgUrl();
             if (!TextUtils.isEmpty(budgetUrl)) {
                 Glide.with(this).load(budgetUrl).into(ivInfo);
             }
         }
-        List<ProjectDetailsResponse.DataBean.StateImgsBean> stateImgs = data.getStateImgs();
+        List<ProjectDetailsResponse.DataBean.StateImgListBean> stateImgs = data.getStateImgList();
         if (stateImgs != null && !stateImgs.isEmpty()) {
-            String stateUrl = data.getStateImgs().get(0).getImgUrl();
+            table = getImageResponse(stateImgs.get(0).getImgUrl(), stateImgs.get(0).getWidth(), stateImgs.get(0).getHeight());
+            String stateUrl = stateImgs.get(0).getImgUrl();
             if (!TextUtils.isEmpty(stateUrl)) {
                 Glide.with(this).load(stateUrl).into(ivTable);
             }
@@ -253,15 +257,12 @@ public class UpdateOrderActivity extends BaseActivity {
                 switch (requestCode) {
                     case 0:
                         updateImage(image, 0);
-                        Glide.with(UpdateOrderActivity.this).load(Uri.parse(image)).into(ivCad);
                         break;
                     case 1:
                         updateImage(image, 1);
-                        Glide.with(UpdateOrderActivity.this).load(Uri.parse(image)).into(ivInfo);
                         break;
                     case 2:
                         updateImage(image, 2);
-                        Glide.with(UpdateOrderActivity.this).load(Uri.parse(image)).into(ivTable);
                         break;
                 }
             }
@@ -339,15 +340,15 @@ public class UpdateOrderActivity extends BaseActivity {
         switch (type) {
             case 0:
                 cad = getImageResponse(data);
-//                Glide.with(UpdateOrderActivity.this).load(data.getUrl()).into(ivCad);
+                Glide.with(UpdateOrderActivity.this).load(data.getUrl()).into(ivCad);
                 break;
             case 1:
                 info = getImageResponse(data);
-//                Glide.with(UpdateOrderActivity.this).load(data.getUrl()).into(ivInfo);
+                Glide.with(UpdateOrderActivity.this).load(data.getUrl()).into(ivInfo);
                 break;
             case 2:
                 table = getImageResponse(data);
-//                Glide.with(UpdateOrderActivity.this).load(data.getUrl()).into(ivTable);
+                Glide.with(UpdateOrderActivity.this).load(data.getUrl()).into(ivTable);
                 break;
         }
     }
@@ -357,6 +358,10 @@ public class UpdateOrderActivity extends BaseActivity {
         int width = data.getWidth();
         int height = data.getHeight();
 
+        return new ImageResponse(url, width, height);
+    }
+
+    private ImageResponse getImageResponse(String url, int width, int height) {
         return new ImageResponse(url, width, height);
     }
 

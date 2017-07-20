@@ -38,6 +38,7 @@ public class MainActivity extends BaseActivity {
     private LoadMoreAdapter adapter;
     private int size;
     private int num;
+    private boolean isFirst = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +54,10 @@ public class MainActivity extends BaseActivity {
         if (TextUtils.isEmpty(SettingUtils.instance().getToken())) {
             LoginActivity.start(MainActivity.this);
         } else {
-            initData();
+            if (isFirst) {
+                isFirst = false;
+                initData();
+            }
         }
     }
 
