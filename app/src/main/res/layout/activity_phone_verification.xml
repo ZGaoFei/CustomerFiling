@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="cn.com.shijizl.customerfiling.me.PhoneVerificationActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:gravity="center_vertical">
+
+        <ImageView
+            android:id="@+id/iv_back_phone_verification"
+            android:layout_width="20dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="15dp"
+            android:src="@drawable/icon_left"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:textSize="16sp"
+            android:text="手机号验证"/>
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#d7dcdc"/>
+
+    <TextView
+        android:id="@+id/tv_code_phone_verification"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:layout_marginLeft="20dp"
+        android:visibility="gone"
+        android:text="短信验证码已发送至：10000000000"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/bg_verification_btn"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="20dp"
+        android:paddingBottom="10dp">
+
+        <EditText
+            android:id="@+id/et_code_phone_verification"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_toLeftOf="@+id/bt_code_phone_verification"
+            android:background="@null"
+            android:gravity="bottom"
+            android:hint="请输入验证码"
+            android:paddingLeft="15dp"
+            android:paddingBottom="5dp"
+            android:textCursorDrawable="@null"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/bt_code_phone_verification"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="15dp"
+            android:background="@drawable/bg_verification_btn"
+            android:text="获取验证码"
+            android:textSize="12sp" />
+
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/bt_take_phone_verification"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:text="提交"/>
+
+</LinearLayout>

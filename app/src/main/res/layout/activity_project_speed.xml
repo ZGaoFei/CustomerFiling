@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="cn.com.shijizl.customerfiling.order.ProjectSpeedActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:gravity="center_vertical">
+
+        <ImageView
+            android:id="@+id/iv_back_project_speed"
+            android:layout_width="20dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="15dp"
+            android:src="@drawable/icon_left" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="施工进度"
+            android:textSize="16sp" />
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#d7dcdc" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:gravity="center_vertical"
+        android:layout_marginLeft="20dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="标题："
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/tv_title_project_speed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="标题"
+            android:textSize="16sp" />
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#d7dcdc" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_project_speed"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+</LinearLayout>
