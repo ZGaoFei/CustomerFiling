@@ -298,9 +298,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="10dp"
                             android:layout_marginRight="20dp"
-                            android:ellipsize="end"
                             android:gravity="end"
-                            android:maxLines="1"
                             android:textSize="15sp" />
 
                     </LinearLayout>

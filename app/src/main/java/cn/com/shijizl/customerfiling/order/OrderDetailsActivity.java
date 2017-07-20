@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -13,7 +14,6 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
-import java.util.Date;
 import java.util.List;
 
 import cn.com.shijizl.customerfiling.R;
@@ -96,6 +96,7 @@ public class OrderDetailsActivity extends BaseActivity {
         btTake.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.e("====", "====" + customerId + "===" + states);
                 if (customerId > 0) {// 开始施工
                     if (states == 0) {
                         startProject(projectId);
@@ -241,8 +242,10 @@ public class OrderDetailsActivity extends BaseActivity {
                 if (response.code() == 200) {
                     ivUpdate.setVisibility(View.GONE);
                     llTime.setVisibility(View.VISIBLE);
-                    tvTime.setText(Utils.paseTime(new Date(System.currentTimeMillis())));
+                    tvTime.setVisibility(View.VISIBLE);
+                    tvTime.setText(Utils.paseTime(System.currentTimeMillis()));
                     btTake.setText("查看进度");
+                    states = 1;
                 } else {
                     Toast.makeText(OrderDetailsActivity.this, response.message(), Toast.LENGTH_SHORT).show();
                 }

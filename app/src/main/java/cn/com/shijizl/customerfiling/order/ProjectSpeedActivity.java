@@ -159,7 +159,7 @@ public class ProjectSpeedActivity extends BaseActivity {
     }
 
     private void checkData() {
-        int result = 0;
+        int result = -1;
         for (int i = 0; i < list.size(); i++) {
             for (int j = 0; j < listProject.size(); j++) {
                 if (listProject.get(j).getScheduleCode() == list.get(i).getScheduleCode()) {
@@ -171,7 +171,9 @@ public class ProjectSpeedActivity extends BaseActivity {
                 }
             }
         }
-        if (result + 1 <= list.size() - 1) {
+        if (result < 0) {
+            list.get(0).setEnable(true);
+        } else if (result + 1 <= list.size() - 1) {
             list.get(result + 1).setEnable(true);
         }
 
