@@ -51,8 +51,8 @@ public class UpdateOrderActivity extends BaseActivity {
     private int customerId;
 
     private ImageResponse cad;
-    private ImageResponse info;
-    private ImageResponse table;
+    private ImageResponse budget;
+    private ImageResponse state;
 
     public static void start(Context context, String projectId, int customerId) {
         Intent intent = new Intent(context, UpdateOrderActivity.class);
@@ -118,12 +118,12 @@ public class UpdateOrderActivity extends BaseActivity {
                 String trim = etTitle.getText().toString().trim();
                 if (TextUtils.isEmpty(trim)) {
                     Toast.makeText(UpdateOrderActivity.this, "请添加标题", Toast.LENGTH_SHORT).show();
-                } else if (cad == null || info == null || table == null){
+                } else if (cad == null || budget == null || state == null){
                     Toast.makeText(UpdateOrderActivity.this, "请完善信息", Toast.LENGTH_SHORT).show();
                 } else {
                     String cadString = jsonToString(cad);
-                    String infoString = jsonToString(info);
-                    String tableString = jsonToString(table);
+                    String infoString = jsonToString(budget);
+                    String tableString = jsonToString(state);
                     addOrUpadteProject(trim, cadString, infoString, tableString);
                 }
 
@@ -202,7 +202,7 @@ public class UpdateOrderActivity extends BaseActivity {
         }
         List<ProjectDetailsResponse.DataBean.BudgetImgListBean> budgetImgs = data.getBudgetImgList();
         if (budgetImgs != null && !budgetImgs.isEmpty()) {
-            info = getImageResponse(budgetImgs.get(0).getImgUrl(), budgetImgs.get(0).getWidth(), budgetImgs.get(0).getHeight());
+            budget = getImageResponse(budgetImgs.get(0).getImgUrl(), budgetImgs.get(0).getWidth(), budgetImgs.get(0).getHeight());
             String budgetUrl = budgetImgs.get(0).getImgUrl();
             if (!TextUtils.isEmpty(budgetUrl)) {
                 Glide.with(this)
@@ -212,10 +212,10 @@ public class UpdateOrderActivity extends BaseActivity {
                         .into(ivInfo);
             }
         }
-        List<ProjectDetailsResponse.DataBean.StateImgListBean> stateImgs = data.getStateImgList();
-        if (stateImgs != null && !stateImgs.isEmpty()) {
-            table = getImageResponse(stateImgs.get(0).getImgUrl(), stateImgs.get(0).getWidth(), stateImgs.get(0).getHeight());
-            String stateUrl = stateImgs.get(0).getImgUrl();
+        List<ProjectDetailsResponse.DataBean.StateImgListBean> stateImages = data.getStateImgList();
+        if (stateImages != null && !stateImages.isEmpty()) {
+            state = getImageResponse(stateImages.get(0).getImgUrl(), stateImages.get(0).getWidth(), stateImages.get(0).getHeight());
+            String stateUrl = stateImages.get(0).getImgUrl();
             if (!TextUtils.isEmpty(stateUrl)) {
                 Glide.with(this)
                         .load(stateUrl)
@@ -330,7 +330,7 @@ public class UpdateOrderActivity extends BaseActivity {
     }
 
     private void addOrUpadteProject(String title, String budgetImgs, String cadImgs, String stateImgs) {
-        Call<EmptyResponse> call = NetModel.getInstance().addOrUpadteProject(SettingUtils.instance().getToken(), "", title, budgetImgs, cadImgs, stateImgs);
+        Call<EmptyResponse> call = NetModel.getInstance().addOrUpadteProject(SettingUtils.instance().getToken(), projectId, title, cadImgs, budgetImgs, stateImgs);
         call.enqueue(new Callback<EmptyResponse>() {
             @Override
             public void onResponse(Call<EmptyResponse> call, Response<EmptyResponse> response) {
@@ -356,10 +356,11 @@ public class UpdateOrderActivity extends BaseActivity {
                 Glide.with(UpdateOrderActivity.this)
                         .load(data.getUrl())
                         .override(400, 400)
-                        .fitCenter().into(ivCad);
+                        .fitCenter()
+                        .into(ivCad);
                 break;
             case 1:
-                info = getImageResponse(data);
+                budget = getImageResponse(data);
                 Glide.with(UpdateOrderActivity.this)
                         .load(data.getUrl())
                         .override(400, 400)
@@ -367,7 +368,7 @@ public class UpdateOrderActivity extends BaseActivity {
                         .into(ivInfo);
                 break;
             case 2:
-                table = getImageResponse(data);
+                state = getImageResponse(data);
                 Glide.with(UpdateOrderActivity.this)
                         .load(data.getUrl())
                         .override(400, 400)

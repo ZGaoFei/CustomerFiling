@@ -158,30 +158,30 @@ public class OrderDetailsActivity extends BaseActivity {
         }else {
             ivCad.setImageResource(R.drawable.place_holder);
         }
-        List<ProjectDetailsResponse.DataBean.BudgetImgListBean> budgetImgs = data.getBudgetImgList();
-        if (budgetImgs != null && !budgetImgs.isEmpty()) {
-            String budgetUrl = budgetImgs.get(0).getImgUrl();
-            if (!TextUtils.isEmpty(budgetUrl)) {
-                Glide.with(this).
-                        load(budgetUrl)
-                        .override(400, 400)
-                        .fitCenter()
-                        .placeholder(R.drawable.place_holder)
-                        .into(ivInfo);
-            }
-        } else {
-            ivInfo.setImageResource(R.drawable.place_holder);
-        }
-        List<ProjectDetailsResponse.DataBean.StateImgListBean> stateImgs = data.getStateImgList();
-        if (stateImgs != null && !stateImgs.isEmpty()) {
-            String stateUrl = stateImgs.get(0).getImgUrl();
+        List<ProjectDetailsResponse.DataBean.StateImgListBean> stateImages = data.getStateImgList();
+        if (stateImages != null && !stateImages.isEmpty()) {
+            String stateUrl = stateImages.get(0).getImgUrl();
             if (!TextUtils.isEmpty(stateUrl)) {
-                Glide.with(this)
-                        .load(stateUrl)
+                Glide.with(this).
+                        load(stateUrl)
                         .override(400, 400)
                         .fitCenter()
                         .placeholder(R.drawable.place_holder)
                         .into(ivTable);
+            }
+        } else {
+            ivInfo.setImageResource(R.drawable.place_holder);
+        }
+        List<ProjectDetailsResponse.DataBean.BudgetImgListBean> budgetImgs = data.getBudgetImgList();
+        if (budgetImgs != null && !budgetImgs.isEmpty()) {
+            String budgetUrl = budgetImgs.get(0).getImgUrl();
+            if (!TextUtils.isEmpty(budgetUrl)) {
+                Glide.with(this)
+                        .load(budgetUrl)
+                        .override(400, 400)
+                        .fitCenter()
+                        .placeholder(R.drawable.place_holder)
+                        .into(ivInfo);
             }
         }else {
             ivTable.setImageResource(R.drawable.place_holder);

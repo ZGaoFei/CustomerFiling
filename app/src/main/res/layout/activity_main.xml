@@ -32,7 +32,7 @@
             android:layout_height="match_parent"
             android:layout_alignParentRight="true"
             android:layout_marginRight="15dp"
-            android:src="@drawable/icon_add"/>
+            android:src="@drawable/icon_add_image"/>
 
     </RelativeLayout>
 
