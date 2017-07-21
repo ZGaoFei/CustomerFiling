@@ -93,4 +93,8 @@ public class NetModel {
     public Call<ProjectScheduleResponse> getSysALLSchedule(String accessToken) {
         return apiService.getSysALLSchedule(accessToken);
     }
+
+    public Call<EmptyResponse> updateUserInfo(String accessToken, String profile, String realName) {
+        return apiService.updateUserInfo(accessToken, profile, realName);
+    }
 }

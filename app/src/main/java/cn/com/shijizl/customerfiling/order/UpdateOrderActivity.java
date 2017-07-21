@@ -193,7 +193,11 @@ public class UpdateOrderActivity extends BaseActivity {
             cad = getImageResponse(cadImgs.get(0).getImgUrl(), cadImgs.get(0).getWidth(), cadImgs.get(0).getHeight());
             String cadUrl = cadImgs.get(0).getImgUrl();
             if (!TextUtils.isEmpty(cadUrl)) {
-                Glide.with(this).load(cadUrl).into(ivCad);
+                Glide.with(this)
+                        .load(cadUrl)
+                        .override(400, 400)
+                        .fitCenter()
+                        .into(ivCad);
             }
         }
         List<ProjectDetailsResponse.DataBean.BudgetImgListBean> budgetImgs = data.getBudgetImgList();
@@ -201,7 +205,11 @@ public class UpdateOrderActivity extends BaseActivity {
             info = getImageResponse(budgetImgs.get(0).getImgUrl(), budgetImgs.get(0).getWidth(), budgetImgs.get(0).getHeight());
             String budgetUrl = budgetImgs.get(0).getImgUrl();
             if (!TextUtils.isEmpty(budgetUrl)) {
-                Glide.with(this).load(budgetUrl).into(ivInfo);
+                Glide.with(this)
+                        .load(budgetUrl)
+                        .override(400, 400)
+                        .fitCenter()
+                        .into(ivInfo);
             }
         }
         List<ProjectDetailsResponse.DataBean.StateImgListBean> stateImgs = data.getStateImgList();
@@ -209,7 +217,11 @@ public class UpdateOrderActivity extends BaseActivity {
             table = getImageResponse(stateImgs.get(0).getImgUrl(), stateImgs.get(0).getWidth(), stateImgs.get(0).getHeight());
             String stateUrl = stateImgs.get(0).getImgUrl();
             if (!TextUtils.isEmpty(stateUrl)) {
-                Glide.with(this).load(stateUrl).into(ivTable);
+                Glide.with(this)
+                        .load(stateUrl)
+                        .override(400, 400)
+                        .fitCenter()
+                        .into(ivTable);
             }
         }
     }
@@ -296,6 +308,7 @@ public class UpdateOrderActivity extends BaseActivity {
                 if (response.code() == 200) {
                     UpdateImageResponse.DataBean data = response.body().getData();
                     if (data != null) {
+                        Toast.makeText(UpdateOrderActivity.this, "上传图片成功", Toast.LENGTH_SHORT).show();
                         setImage(type, data);
                     }
                 } else {
@@ -340,15 +353,26 @@ public class UpdateOrderActivity extends BaseActivity {
         switch (type) {
             case 0:
                 cad = getImageResponse(data);
-                Glide.with(UpdateOrderActivity.this).load(data.getUrl()).into(ivCad);
+                Glide.with(UpdateOrderActivity.this)
+                        .load(data.getUrl())
+                        .override(400, 400)
+                        .fitCenter().into(ivCad);
                 break;
             case 1:
                 info = getImageResponse(data);
-                Glide.with(UpdateOrderActivity.this).load(data.getUrl()).into(ivInfo);
+                Glide.with(UpdateOrderActivity.this)
+                        .load(data.getUrl())
+                        .override(400, 400)
+                        .fitCenter()
+                        .into(ivInfo);
                 break;
             case 2:
                 table = getImageResponse(data);
-                Glide.with(UpdateOrderActivity.this).load(data.getUrl()).into(ivTable);
+                Glide.with(UpdateOrderActivity.this)
+                        .load(data.getUrl())
+                        .override(400, 400)
+                        .fitCenter()
+                        .into(ivTable);
                 break;
         }
     }

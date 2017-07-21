@@ -229,19 +229,34 @@ public class AddOrderActivity extends BaseActivity {
                 cad = getImageResponse(data);
                 ivAddImage.setVisibility(View.GONE);
                 ivImageCad.setVisibility(View.VISIBLE);
-                Glide.with(AddOrderActivity.this).load(data.getUrl()).placeholder(R.drawable.place_holder).into(ivImageCad);
+                Glide.with(AddOrderActivity.this)
+                        .load(data.getUrl())
+                        .override(400, 400)
+                        .fitCenter()
+                        .placeholder(R.drawable.place_holder)
+                        .into(ivImageCad);
                 break;
             case 1:
                 info = getImageResponse(data);
                 ivAddInfo.setVisibility(View.GONE);
                 ivImageInfo.setVisibility(View.VISIBLE);
-                Glide.with(AddOrderActivity.this).load(data.getUrl()).placeholder(R.drawable.place_holder).into(ivImageInfo);
+                Glide.with(AddOrderActivity.this)
+                        .load(data.getUrl())
+                        .override(400, 400)
+                        .fitCenter()
+                        .placeholder(R.drawable.place_holder)
+                        .into(ivImageInfo);
                 break;
             case 2:
                 table = getImageResponse(data);
                 ivAddTable.setVisibility(View.GONE);
                 ivImageTable.setVisibility(View.VISIBLE);
-                Glide.with(AddOrderActivity.this).load(data.getUrl()).placeholder(R.drawable.place_holder).into(ivImageTable);
+                Glide.with(AddOrderActivity.this)
+                        .load(data.getUrl())
+                        .override(400, 400)
+                        .fitCenter()
+                        .placeholder(R.drawable.place_holder)
+                        .into(ivImageTable);
                 break;
         }
     }

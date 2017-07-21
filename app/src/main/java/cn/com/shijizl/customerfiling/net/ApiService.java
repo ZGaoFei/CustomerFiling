@@ -139,4 +139,12 @@ public interface ApiService {
     Call<ProjectScheduleResponse> getSysALLSchedule(
             @Query("accessToken") String accessToken
     );
+
+    @FormUrlEncoded
+    @POST("yorkba/app/user/updateUserInfo")
+    Call<EmptyResponse> updateUserInfo(
+            @Field("accessToken") String accessToken,
+            @Field("profile") String profile,
+            @Field("realName") String realName
+    );
 }
