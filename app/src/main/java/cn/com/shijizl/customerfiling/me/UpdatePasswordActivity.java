@@ -2,8 +2,8 @@ package cn.com.shijizl.customerfiling.me;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -11,7 +11,6 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import cn.com.shijizl.customerfiling.R;
-import cn.com.shijizl.customerfiling.base.App;
 import cn.com.shijizl.customerfiling.net.NetModel;
 import cn.com.shijizl.customerfiling.net.model.EmptyResponse;
 import cn.com.shijizl.customerfiling.utils.SettingUtils;
@@ -40,7 +39,7 @@ public class UpdatePasswordActivity extends AppCompatActivity {
         ivBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                App.getInstance().exit();
+                finish();
             }
         });
 
@@ -75,11 +74,11 @@ public class UpdatePasswordActivity extends AppCompatActivity {
         call.enqueue(new Callback<EmptyResponse>() {
             @Override
             public void onResponse(Call<EmptyResponse> call, Response<EmptyResponse> response) {
-                if (response.code() == 200) {
+                if (response.body().getCode() == 0) {
                     Toast.makeText(UpdatePasswordActivity.this, "密码修改成功", Toast.LENGTH_SHORT).show();
                     finish();
                 } else {
-                    Toast.makeText(UpdatePasswordActivity.this, response.message(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(UpdatePasswordActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
 

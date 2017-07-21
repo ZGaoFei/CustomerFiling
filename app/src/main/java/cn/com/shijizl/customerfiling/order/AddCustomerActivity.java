@@ -85,11 +85,11 @@ public class AddCustomerActivity extends BaseActivity {
         call.enqueue(new Callback<EmptyResponse>() {
             @Override
             public void onResponse(Call<EmptyResponse> call, Response<EmptyResponse> response) {
-                if (response.code() == 200) {
+                if (response.body().getCode() == 0) {
                     Toast.makeText(AddCustomerActivity.this, "提交成功", Toast.LENGTH_SHORT).show();
                     finish();
                 } else {
-                    Toast.makeText(AddCustomerActivity.this, response.message(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AddCustomerActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
 

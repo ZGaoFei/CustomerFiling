@@ -5,7 +5,7 @@ import java.util.List;
 public class ProjectDetailsResponse {
 
     private int code;
-    private Object message;
+    private String message;
     private DataBean data;
 
     public int getCode() {
@@ -16,11 +16,11 @@ public class ProjectDetailsResponse {
         this.code = code;
     }
 
-    public Object getMessage() {
+    public String getMessage() {
         return message;
     }
 
-    public void setMessage(Object message) {
+    public void setMessage(String message) {
         this.message = message;
     }
 

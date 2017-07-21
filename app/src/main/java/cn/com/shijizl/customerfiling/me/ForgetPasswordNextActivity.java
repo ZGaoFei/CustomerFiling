@@ -14,7 +14,6 @@ import cn.com.shijizl.customerfiling.R;
 import cn.com.shijizl.customerfiling.base.BaseActivity;
 import cn.com.shijizl.customerfiling.net.NetModel;
 import cn.com.shijizl.customerfiling.net.model.EmptyResponse;
-import cn.com.shijizl.customerfiling.order.OrderDetailsActivity;
 import cn.com.shijizl.customerfiling.utils.Utils;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -80,11 +79,11 @@ public class ForgetPasswordNextActivity extends BaseActivity {
         call.enqueue(new Callback<EmptyResponse>() {
             @Override
             public void onResponse(Call<EmptyResponse> call, Response<EmptyResponse> response) {
-                if (response.code() == 200) {
+                if (response.body().getCode() == 0) {
                     Toast.makeText(ForgetPasswordNextActivity.this, "修改成功，请重新登录", Toast.LENGTH_SHORT).show();
                     LoginActivity.start(ForgetPasswordNextActivity.this);
                 } else {
-                    Toast.makeText(ForgetPasswordNextActivity.this, response.message(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ForgetPasswordNextActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
 

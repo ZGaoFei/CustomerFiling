@@ -180,13 +180,13 @@ public class AddOrderActivity extends BaseActivity {
             @Override
             public void onResponse(Call<UpdateImageResponse> call, Response<UpdateImageResponse> response) {
 
-                if (response.code() == 200) {
+                if (response.body().getCode() == 0) {
                     UpdateImageResponse.DataBean data = response.body().getData();
                     if (data != null) {
                         setImage(type, data);
                     }
                 } else {
-                    Toast.makeText(AddOrderActivity.this, response.message(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AddOrderActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -208,11 +208,11 @@ public class AddOrderActivity extends BaseActivity {
         call.enqueue(new Callback<EmptyResponse>() {
             @Override
             public void onResponse(Call<EmptyResponse> call, Response<EmptyResponse> response) {
-                if (response.code() == 200) {
+                if (response.body().getCode() == 0) {
                     Toast.makeText(AddOrderActivity.this, "提交成功", Toast.LENGTH_SHORT).show();
                     finish();
                 } else {
-                    Toast.makeText(AddOrderActivity.this, response.message(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AddOrderActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
 

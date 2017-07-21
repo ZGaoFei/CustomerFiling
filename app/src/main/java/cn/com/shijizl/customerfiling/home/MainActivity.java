@@ -38,7 +38,6 @@ public class MainActivity extends BaseActivity {
     private LoadMoreAdapter adapter;
     private int size;
     private int num;
-    private boolean isFirst = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,10 +53,7 @@ public class MainActivity extends BaseActivity {
         if (TextUtils.isEmpty(SettingUtils.instance().getToken())) {
             LoginActivity.start(MainActivity.this);
         } else {
-            if (isFirst) {
-                isFirst = false;
-                initData();
-            }
+            initData();
         }
     }
 
@@ -124,7 +120,7 @@ public class MainActivity extends BaseActivity {
         call.enqueue(new Callback<ProjectListResponse>() {
             @Override
             public void onResponse(Call<ProjectListResponse> call, Response<ProjectListResponse> response) {
-                if (response.code() == 200) {
+                if (response.body().getCode() == 0) {
                     List<ProjectListResponse.DataBean> data = response.body().getData();
                     if (list != null && !list.isEmpty()) {
                         list.clear();
@@ -135,7 +131,7 @@ public class MainActivity extends BaseActivity {
                         refreshLayout.finishRefresh();
                     }
                 } else {
-                    Toast.makeText(MainActivity.this, response.message(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -156,7 +152,7 @@ public class MainActivity extends BaseActivity {
         call.enqueue(new Callback<ProjectListResponse>() {
             @Override
             public void onResponse(Call<ProjectListResponse> call, Response<ProjectListResponse> response) {
-                if (response.code() == 200) {
+                if (response.body().getCode() == 0) {
                     List<ProjectListResponse.DataBean> data = response.body().getData();
                     if (data != null && !data.isEmpty()) {
                         list.addAll(data);
@@ -166,7 +162,7 @@ public class MainActivity extends BaseActivity {
                         refreshLayout.finishLoadmore(true);
                     }
                 } else {
-                    Toast.makeText(MainActivity.this, response.message(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
 

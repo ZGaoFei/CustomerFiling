@@ -16,7 +16,6 @@ import cn.com.shijizl.customerfiling.R;
 import cn.com.shijizl.customerfiling.base.BaseActivity;
 import cn.com.shijizl.customerfiling.net.NetModel;
 import cn.com.shijizl.customerfiling.net.model.CodeResponse;
-import cn.com.shijizl.customerfiling.order.OrderDetailsActivity;
 import cn.com.shijizl.customerfiling.utils.Utils;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -105,7 +104,7 @@ public class ForgetPasswordActivity extends BaseActivity {
         code.enqueue(new Callback<CodeResponse>() {
             @Override
             public void onResponse(Call<CodeResponse> call, Response<CodeResponse> response) {
-                if (response.code() == 200) {
+                if (response.body().getCode() == 0) {
                     CodeResponse body = response.body();
                     CodeResponse.DataBean data = body.getData();
                     if (data != null) {
@@ -113,7 +112,7 @@ public class ForgetPasswordActivity extends BaseActivity {
                         codeNum = data.getVerifyCode();
                     }
                 } else {
-                    Toast.makeText(ForgetPasswordActivity.this, response.message(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ForgetPasswordActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
 

@@ -4,7 +4,7 @@ package cn.com.shijizl.customerfiling.net.model;
 public class UserInfoResponse {
 
     private int code;
-    private Object message;
+    private String message;
     private DataBean data;
 
     public int getCode() {
@@ -15,11 +15,11 @@ public class UserInfoResponse {
         this.code = code;
     }
 
-    public Object getMessage() {
+    public String getMessage() {
         return message;
     }
 
-    public void setMessage(Object message) {
+    public void setMessage(String message) {
         this.message = message;
     }
 

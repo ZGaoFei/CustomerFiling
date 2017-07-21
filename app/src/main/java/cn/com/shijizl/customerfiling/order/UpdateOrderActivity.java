@@ -169,13 +169,13 @@ public class UpdateOrderActivity extends BaseActivity {
         call.enqueue(new Callback<ProjectDetailsResponse>() {
             @Override
             public void onResponse(Call<ProjectDetailsResponse> call, Response<ProjectDetailsResponse> response) {
-                if (response.code() == 200) {
+                if (response.body().getCode() == 0) {
                     ProjectDetailsResponse.DataBean data = response.body().getData();
                     if (data != null) {
                         setTop(data);
                     }
                 } else {
-                    Toast.makeText(UpdateOrderActivity.this, response.message(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(UpdateOrderActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -235,13 +235,13 @@ public class UpdateOrderActivity extends BaseActivity {
         call.enqueue(new Callback<CustomerResponse>() {
             @Override
             public void onResponse(Call<CustomerResponse> call, Response<CustomerResponse> response) {
-                if (response.code() == 200) {
+                if (response.body().getCode() == 0) {
                     CustomerResponse.DataBean data = response.body().getData();
                     if (data != null) {
                         setBottom(data);
                     }
                 } else {
-                    Toast.makeText(UpdateOrderActivity.this, response.message(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(UpdateOrderActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -305,14 +305,14 @@ public class UpdateOrderActivity extends BaseActivity {
             @Override
             public void onResponse(Call<UpdateImageResponse> call, Response<UpdateImageResponse> response) {
 
-                if (response.code() == 200) {
+                if (response.body().getCode() == 0) {
                     UpdateImageResponse.DataBean data = response.body().getData();
                     if (data != null) {
                         Toast.makeText(UpdateOrderActivity.this, "上传图片成功", Toast.LENGTH_SHORT).show();
                         setImage(type, data);
                     }
                 } else {
-                    Toast.makeText(UpdateOrderActivity.this, response.message(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(UpdateOrderActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -334,11 +334,11 @@ public class UpdateOrderActivity extends BaseActivity {
         call.enqueue(new Callback<EmptyResponse>() {
             @Override
             public void onResponse(Call<EmptyResponse> call, Response<EmptyResponse> response) {
-                if (response.code() == 200) {
+                if (response.body().getCode() == 0) {
                     Toast.makeText(UpdateOrderActivity.this, "提交成功", Toast.LENGTH_SHORT).show();
                     finish();
                 } else {
-                    Toast.makeText(UpdateOrderActivity.this, response.message(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(UpdateOrderActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -408,11 +408,11 @@ public class UpdateOrderActivity extends BaseActivity {
         call.enqueue(new Callback<EmptyResponse>() {
             @Override
             public void onResponse(Call<EmptyResponse> call, Response<EmptyResponse> response) {
-                if (response.code() == 200) {
+                if (response.body().getCode() == 0) {
                     Toast.makeText(UpdateOrderActivity.this, "提交成功", Toast.LENGTH_SHORT).show();
                     finish();
                 } else {
-                    Toast.makeText(UpdateOrderActivity.this, response.message(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(UpdateOrderActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
 

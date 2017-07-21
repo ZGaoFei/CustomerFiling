@@ -90,7 +90,7 @@ public class LoginActivity extends BaseActivity{
         login.enqueue(new Callback<RegisterResponse>() {
             @Override
             public void onResponse(Call<RegisterResponse> call, Response<RegisterResponse> response) {
-                if (response.code() == 200) {
+                if (response.body().getCode() == 0) {
                     RegisterResponse.DataBean data = response.body().getData();
                     if (data != null) {
                         String accessToken = data.getAccessToken();
@@ -101,7 +101,7 @@ public class LoginActivity extends BaseActivity{
                         finish();
                     }
                 } else {
-                    Toast.makeText(LoginActivity.this, response.message(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
 

@@ -98,7 +98,7 @@ public class ProjectSpeedActivity extends BaseActivity {
         call.enqueue(new Callback<EmptyResponse>() {
             @Override
             public void onResponse(Call<EmptyResponse> call, Response<EmptyResponse> response) {
-                if (response.code() == 200) {
+                if (response.body().getCode() == 0) {
                     Toast.makeText(ProjectSpeedActivity.this, "进度更新成功", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -119,7 +119,7 @@ public class ProjectSpeedActivity extends BaseActivity {
         call.enqueue(new Callback<ProjectScheduleResponse>() {
             @Override
             public void onResponse(Call<ProjectScheduleResponse> call, Response<ProjectScheduleResponse> response) {
-                if (response.code() == 200) {
+                if (response.body().getCode() == 0) {
                     List<ProjectScheduleResponse.DataBean> data = response.body().getData();
                     listProject.addAll(data);
 
@@ -143,7 +143,7 @@ public class ProjectSpeedActivity extends BaseActivity {
         call.enqueue(new Callback<ProjectScheduleResponse>() {
             @Override
             public void onResponse(Call<ProjectScheduleResponse> call, Response<ProjectScheduleResponse> response) {
-                if (response.code() == 200) {
+                if (response.body().getCode() == 0) {
                     getProjectSchedule(projectId);
 
                     List<ProjectScheduleResponse.DataBean> data = response.body().getData();

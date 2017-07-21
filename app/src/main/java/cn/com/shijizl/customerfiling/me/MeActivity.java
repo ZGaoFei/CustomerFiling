@@ -22,7 +22,6 @@ import cn.com.shijizl.customerfiling.net.UpdateModel;
 import cn.com.shijizl.customerfiling.net.model.EmptyResponse;
 import cn.com.shijizl.customerfiling.net.model.UpdateImageResponse;
 import cn.com.shijizl.customerfiling.net.model.UserInfoResponse;
-import cn.com.shijizl.customerfiling.order.UpdateOrderActivity;
 import cn.com.shijizl.customerfiling.utils.GlideCircleTransform;
 import cn.com.shijizl.customerfiling.utils.SettingUtils;
 import cn.com.shijizl.customerfiling.utils.Utils;
@@ -113,7 +112,7 @@ public class MeActivity extends BaseActivity {
         call.enqueue(new Callback<UserInfoResponse>() {
             @Override
             public void onResponse(Call<UserInfoResponse> call, Response<UserInfoResponse> response) {
-                if (response.code() == 200) {
+                if (response.body().getCode() == 0) {
                     UserInfoResponse.DataBean data = response.body().getData();
                     if (data != null) {
                         imageUrl = data.getProfile();
@@ -128,7 +127,7 @@ public class MeActivity extends BaseActivity {
                         tvName.setText(data.getUserName());
                     }
                 } else {
-                    Toast.makeText(MeActivity.this, response.message(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MeActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -183,14 +182,14 @@ public class MeActivity extends BaseActivity {
             @Override
             public void onResponse(Call<UpdateImageResponse> call, Response<UpdateImageResponse> response) {
 
-                if (response.code() == 200) {
+                if (response.body().getCode() == 0) {
                     UpdateImageResponse.DataBean data = response.body().getData();
                     if (data != null) {
                         imageUrl = data.getUrl();
                         Toast.makeText(MeActivity.this, "上传图片成功", Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    Toast.makeText(MeActivity.this, response.message(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MeActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -216,10 +215,10 @@ public class MeActivity extends BaseActivity {
         call.enqueue(new Callback<EmptyResponse>() {
             @Override
             public void onResponse(Call<EmptyResponse> call, Response<EmptyResponse> response) {
-                if (response.code() == 200) {
+                if (response.body().getCode() == 0) {
                     Toast.makeText(MeActivity.this, "更新用户信息成功", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(MeActivity.this, response.message(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MeActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
 

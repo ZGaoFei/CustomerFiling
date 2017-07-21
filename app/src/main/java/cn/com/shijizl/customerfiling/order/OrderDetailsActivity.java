@@ -124,13 +124,13 @@ public class OrderDetailsActivity extends BaseActivity {
         call.enqueue(new Callback<ProjectDetailsResponse>() {
             @Override
             public void onResponse(Call<ProjectDetailsResponse> call, Response<ProjectDetailsResponse> response) {
-                if (response.code() == 200) {
+                if (response.body().getCode() == 0) {
                     ProjectDetailsResponse.DataBean data = response.body().getData();
                     if (data != null) {
                         setTop(data);
                     }
                 } else {
-                    Toast.makeText(OrderDetailsActivity.this, response.message(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(OrderDetailsActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -220,13 +220,13 @@ public class OrderDetailsActivity extends BaseActivity {
         call.enqueue(new Callback<CustomerResponse>() {
             @Override
             public void onResponse(Call<CustomerResponse> call, Response<CustomerResponse> response) {
-                if (response.code() == 200) {
+                if (response.body().getCode() == 0) {
                     CustomerResponse.DataBean data = response.body().getData();
                     if (data != null) {
                         setBottom(data);
                     }
                 } else {
-                    Toast.makeText(OrderDetailsActivity.this, response.message(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(OrderDetailsActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -252,7 +252,7 @@ public class OrderDetailsActivity extends BaseActivity {
         call.enqueue(new Callback<EmptyResponse>() {
             @Override
             public void onResponse(Call<EmptyResponse> call, Response<EmptyResponse> response) {
-                if (response.code() == 200) {
+                if (response.body().getCode() == 0) {
                     ivUpdate.setVisibility(View.GONE);
                     llTime.setVisibility(View.VISIBLE);
                     tvTime.setVisibility(View.VISIBLE);
@@ -260,7 +260,7 @@ public class OrderDetailsActivity extends BaseActivity {
                     btTake.setText("查看进度");
                     states = 1;
                 } else {
-                    Toast.makeText(OrderDetailsActivity.this, response.message(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(OrderDetailsActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
 
