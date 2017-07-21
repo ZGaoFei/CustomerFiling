@@ -27,11 +27,11 @@
 
         <ImageView
             android:id="@+id/iv_update_order_details"
-            android:layout_width="wrap_content"
+            android:layout_width="20dp"
             android:layout_height="match_parent"
             android:layout_alignParentRight="true"
             android:layout_marginRight="20dp"
-            android:src="@drawable/icon_add" />
+            android:src="@drawable/icon_update" />
 
     </RelativeLayout>
 
