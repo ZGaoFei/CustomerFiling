@@ -46,7 +46,7 @@ public class LoadMoreAdapter extends RecyclerView.Adapter<LoadMoreAdapter.ViewHo
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
         holder.tvTitle.setText(list.get(position).getTitle());
-        holder.tvTime.setText(Utils.paseTime(list.get(position).getCreateTime()));
+        holder.tvTime.setText(Utils.paseTimeAll(list.get(position).getCreateTime()));
         if (list.get(position).getStatus() == 0) {
             holder.tvSpeed.setText("未施工");
         } else if (list.get(position).getStatus() == 1) {

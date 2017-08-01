@@ -243,6 +243,11 @@ public class Utils {
         return formater.format(time);
     }
 
+    public static String paseTimeAll(long time) {
+        SimpleDateFormat formater = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return formater.format(time);
+    }
+
     public static String paseTime(Date time) {
         SimpleDateFormat formater = new SimpleDateFormat("yyyyMMdd");
         return formater.format(time);

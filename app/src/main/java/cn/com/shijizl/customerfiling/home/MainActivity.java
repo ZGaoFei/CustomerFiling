@@ -6,8 +6,11 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.footer.ClassicsFooter;
 import com.scwang.smartrefresh.layout.header.ClassicsHeader;
@@ -24,8 +27,10 @@ import cn.com.shijizl.customerfiling.me.LoginActivity;
 import cn.com.shijizl.customerfiling.me.MeActivity;
 import cn.com.shijizl.customerfiling.net.NetModel;
 import cn.com.shijizl.customerfiling.net.model.ProjectListResponse;
+import cn.com.shijizl.customerfiling.net.model.UserInfoResponse;
 import cn.com.shijizl.customerfiling.order.AddOrderActivity;
 import cn.com.shijizl.customerfiling.order.OrderDetailsActivity;
+import cn.com.shijizl.customerfiling.utils.GlideCircleTransform;
 import cn.com.shijizl.customerfiling.utils.SettingUtils;
 import cn.com.shijizl.customerfiling.utils.Utils;
 import retrofit2.Call;
@@ -38,6 +43,9 @@ public class MainActivity extends BaseActivity {
     private LoadMoreAdapter adapter;
     private int size;
     private int num;
+
+    private LinearLayout llEmpty;
+    private ImageView ivUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +62,7 @@ public class MainActivity extends BaseActivity {
             LoginActivity.start(MainActivity.this);
         } else {
             initData();
+            getUserInfo();
         }
     }
 
@@ -64,8 +73,9 @@ public class MainActivity extends BaseActivity {
     }
 
     private void initView() {
-        ImageView ivUser = (ImageView) findViewById(R.id.iv_main_me);
-        ImageView ivAdd = (ImageView) findViewById(R.id.iv_main_add);
+        ivUser = (ImageView) findViewById(R.id.iv_main_me);
+        TextView tvAdd = (TextView) findViewById(R.id.tv_main_add);
+        llEmpty = (LinearLayout) findViewById(R.id.ll_main_empty);
 
         ivUser.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -74,7 +84,7 @@ public class MainActivity extends BaseActivity {
             }
         });
 
-        ivAdd.setOnClickListener(new View.OnClickListener() {
+        tvAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 AddOrderActivity.start(MainActivity.this);
@@ -125,13 +135,17 @@ public class MainActivity extends BaseActivity {
                     if (list != null && !list.isEmpty()) {
                         list.clear();
                     }
-                    if (data != null) {
+                    if (data != null && !data.isEmpty()) {
                         list.addAll(data);
                         adapter.updateData(list);
                         refreshLayout.finishRefresh();
+                        llEmpty.setVisibility(View.GONE);
+                    } else {
+                        llEmpty.setVisibility(View.VISIBLE);
                     }
                 } else {
                     Toast.makeText(MainActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                    llEmpty.setVisibility(View.GONE);
                 }
             }
 
@@ -169,6 +183,31 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onFailure(Call<ProjectListResponse> call, Throwable t) {
                 refreshLayout.finishLoadmore(false);
+            }
+        });
+    }
+
+    private void getUserInfo() {
+        Call<UserInfoResponse> call = NetModel.getInstance().getUserInfo(SettingUtils.instance().getToken());
+        call.enqueue(new Callback<UserInfoResponse>() {
+            @Override
+            public void onResponse(Call<UserInfoResponse> call, Response<UserInfoResponse> response) {
+                if (response.body().getCode() == 0) {
+                    UserInfoResponse.DataBean data = response.body().getData();
+                    if (data != null) {
+                        Glide.with(MainActivity.this)
+                                .load(data.getProfile())
+                                .override(200, 200)
+                                .bitmapTransform(new GlideCircleTransform(MainActivity.this))
+                                .crossFade(1000)
+                                .into(ivUser);
+                    }
+                } else {
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UserInfoResponse> call, Throwable t) {
             }
         });
     }

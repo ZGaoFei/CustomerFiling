@@ -60,7 +60,8 @@
         <activity android:name=".me.UpdatePasswordActivity" />
         <activity android:name=".order.AddCustomerActivity" />
         <activity android:name=".order.ProjectSpeedActivity" />
-        <activity android:name=".order.UpdateOrderActivity"></activity>
+        <activity android:name=".order.UpdateOrderActivity" />
+        <activity android:name=".me.UpdateNickActivity"></activity>
     </application>
 
 </manifest>

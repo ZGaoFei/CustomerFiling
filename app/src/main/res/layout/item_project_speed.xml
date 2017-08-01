@@ -6,7 +6,7 @@
     android:orientation="horizontal">
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="200dp"
         android:layout_height="50dp"
         android:gravity="center_vertical"
         android:orientation="horizontal">
@@ -26,5 +26,12 @@
             tools:text="技术" />
 
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_item_speed"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        tools:text="2017"/>
 
 </LinearLayout>

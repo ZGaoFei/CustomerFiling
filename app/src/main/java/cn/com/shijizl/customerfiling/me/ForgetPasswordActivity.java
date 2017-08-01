@@ -158,7 +158,7 @@ public class ForgetPasswordActivity extends BaseActivity {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case 1010:
-                    btGetCode.setText("" + seconds + " s");
+                    btGetCode.setText("重新获取(" + seconds + ")");
                     break;
                 case 1011:
                     seconds = 60;

@@ -1,12 +1,14 @@
 package cn.com.shijizl.customerfiling.me;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,7 +21,6 @@ import cn.com.shijizl.customerfiling.R;
 import cn.com.shijizl.customerfiling.base.BaseActivity;
 import cn.com.shijizl.customerfiling.net.NetModel;
 import cn.com.shijizl.customerfiling.net.UpdateModel;
-import cn.com.shijizl.customerfiling.net.model.EmptyResponse;
 import cn.com.shijizl.customerfiling.net.model.UpdateImageResponse;
 import cn.com.shijizl.customerfiling.net.model.UserInfoResponse;
 import cn.com.shijizl.customerfiling.utils.GlideCircleTransform;
@@ -35,10 +36,11 @@ import retrofit2.Response;
 
 public class MeActivity extends BaseActivity {
     private ImageView ivHeader;
-    private EditText etNick;
     private TextView tvName;
+    private TextView tvNick;
 
     private String imageUrl;
+    private String name;
 
     public static void start(Context context) {
         Intent intent = new Intent(context, MeActivity.class);
@@ -51,6 +53,11 @@ public class MeActivity extends BaseActivity {
         setContentView(R.layout.activity_me);
 
         initView();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         initData();
     }
 
@@ -74,21 +81,20 @@ public class MeActivity extends BaseActivity {
                 checkImage();
             }
         });
-        etNick = (EditText) findViewById(R.id.et_nick_me);
         tvName = (TextView) findViewById(R.id.tv_name_me);
-        ImageView ivChange = (ImageView) findViewById(R.id.iv_password_me);
-        ivChange.setOnClickListener(new View.OnClickListener() {
+        tvNick = (TextView) findViewById(R.id.tv_nick_me);
+        RelativeLayout rlNick = (RelativeLayout) findViewById(R.id.rl_nick_me);
+        rlNick.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                UpdateNickActivity.start(MeActivity.this, imageUrl, name);
+            }
+        });
+        RelativeLayout rlChange = (RelativeLayout) findViewById(R.id.rl_password_me);
+        rlChange.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 UpdatePasswordActivity.start(MeActivity.this);
-            }
-        });
-        ImageView ivSure = (ImageView) findViewById(R.id.iv_me_sure);
-        ivSure.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String nick = etNick.getText().toString().trim();
-                updateUserInfo(imageUrl, nick);
             }
         });
 
@@ -96,9 +102,7 @@ public class MeActivity extends BaseActivity {
         btExit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SettingUtils.instance().clear();
-                LoginActivity.start(MeActivity.this);
-                finish();
+                showDialog();
             }
         });
     }
@@ -121,10 +125,10 @@ public class MeActivity extends BaseActivity {
                                 .override(200, 200)
                                 .bitmapTransform(new GlideCircleTransform(MeActivity.this))
                                 .crossFade(1000)
-                                .placeholder(R.drawable.place_holder)
                                 .into(ivHeader);
-                        etNick.setText(data.getRealName());
                         tvName.setText(data.getUserName());
+                        tvNick.setText(data.getRealName());
+                        name = data.getRealName();
                     }
                 } else {
                     Toast.makeText(MeActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
@@ -206,26 +210,25 @@ public class MeActivity extends BaseActivity {
         return MultipartBody.Part.createFormData(partName, file.getName(), requestFile);
     }
 
-    private void updateUserInfo(String profile, String realName) {
-        if (!Utils.isNetworkOn()) {
-            Toast.makeText(this, "网络异常，请检查您的网络！", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        Call<EmptyResponse> call = NetModel.getInstance().updateUserInfo(SettingUtils.instance().getToken(), profile, realName);
-        call.enqueue(new Callback<EmptyResponse>() {
+    private void showDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MeActivity.this);
+        builder.setMessage("您确实是否退出账户");
+        builder.setTitle("提示");
+        builder.setPositiveButton("确认", new DialogInterface.OnClickListener() {
             @Override
-            public void onResponse(Call<EmptyResponse> call, Response<EmptyResponse> response) {
-                if (response.body().getCode() == 0) {
-                    Toast.makeText(MeActivity.this, "更新用户信息成功", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(MeActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<EmptyResponse> call, Throwable t) {
-                Toast.makeText(MeActivity.this, "更新用户信息失败", Toast.LENGTH_SHORT).show();
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                SettingUtils.instance().clear();
+                LoginActivity.start(MeActivity.this);
+                finish();
             }
         });
+        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.create().show();
     }
 }

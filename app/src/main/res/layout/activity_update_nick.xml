@@ -3,9 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#EEEEEE"
+    android:background="#eeeeee"
     android:orientation="vertical"
-    tools:context="cn.com.shijizl.customerfiling.me.ForgetPasswordNextActivity">
+    tools:context="cn.com.shijizl.customerfiling.me.UpdateNickActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -14,7 +14,7 @@
         android:gravity="center_vertical">
 
         <ImageView
-            android:id="@+id/iv_back_forget_next"
+            android:id="@+id/iv_back_update_nick"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:src="@drawable/icon_left" />
@@ -23,7 +23,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="重设密码"
+            android:text="修改姓名"
             android:textColor="#ffffff"
             android:textSize="18sp" />
 
@@ -40,27 +40,12 @@
         android:orientation="vertical">
 
         <EditText
-            android:id="@+id/et_password_one_forget_next"
+            android:id="@+id/et_update_nick"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_marginLeft="10dp"
             android:background="@null"
-            android:hint="请输入新密码"
-            android:inputType="textPassword" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#d7dcdc" />
-
-        <EditText
-            android:id="@+id/et_password_two_forget_next"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_marginLeft="10dp"
-            android:background="@null"
-            android:hint="请再次输入新密码"
-            android:inputType="textPassword" />
+            android:hint="请输入姓名"/>
 
         <View
             android:layout_width="match_parent"
@@ -70,15 +55,15 @@
     </LinearLayout>
 
     <Button
-        android:id="@+id/bt_next_forget_next"
+        android:id="@+id/bt_next_update_nick"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         android:layout_marginTop="40dp"
         android:background="#3B9BD8"
+        android:text="提  交"
         android:textColor="#ffffff"
-        android:textSize="16sp"
-        android:text="提  交" />
+        android:textSize="16sp" />
 
 </LinearLayout>

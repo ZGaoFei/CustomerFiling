@@ -61,11 +61,13 @@ public class ProjectSpeedAdapter extends RecyclerView.Adapter<ProjectSpeedAdapte
     static class ViewHolder extends RecyclerView.ViewHolder {
         private RadioButton radioButton;
         private TextView textView;
+        private TextView tvTime;
 
         public ViewHolder(View itemView) {
             super(itemView);
             radioButton = (RadioButton) itemView.findViewById(R.id.rb_item_speed);
             textView = (TextView) itemView.findViewById(R.id.tv_content_speed);
+            tvTime = (TextView) itemView.findViewById(R.id.tv_item_speed);
         }
     }
 

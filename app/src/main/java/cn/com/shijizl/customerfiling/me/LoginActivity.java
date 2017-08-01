@@ -8,7 +8,6 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,14 +38,6 @@ public class LoginActivity extends BaseActivity{
     }
 
     private void initView() {
-        ImageView ivBack = (ImageView) findViewById(R.id.iv_back_login);
-        ivBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                App.getInstance().exit();
-            }
-        });
-
         final EditText etPhone = (EditText) findViewById(R.id.et_phone_login);
         final EditText etPassword = (EditText) findViewById(R.id.et_password_login);
 
