@@ -61,7 +61,9 @@
         <activity android:name=".order.AddCustomerActivity" />
         <activity android:name=".order.ProjectSpeedActivity" />
         <activity android:name=".order.UpdateOrderActivity" />
-        <activity android:name=".me.UpdateNickActivity"></activity>
+        <activity android:name=".me.UpdateNickActivity" />
+        <activity android:name="com.soundcloud.android.crop.CropImageActivity" />
+        <activity android:name=".me.CropImageActivity"/>
     </application>
 
 </manifest>

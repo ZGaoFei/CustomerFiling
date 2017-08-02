@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -13,6 +14,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import cn.com.shijizl.customerfiling.R;
@@ -23,6 +25,8 @@ import cn.com.shijizl.customerfiling.net.model.EmptyResponse;
 import cn.com.shijizl.customerfiling.net.model.ProjectDetailsResponse;
 import cn.com.shijizl.customerfiling.utils.SettingUtils;
 import cn.com.shijizl.customerfiling.utils.Utils;
+import me.iwf.photopicker.PhotoPicker;
+import me.iwf.photopicker.PhotoPreview;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -42,6 +46,7 @@ public class OrderDetailsActivity extends BaseActivity {
     private String projectTitle;
     private int customerId = 0;
     private int states;
+    private ArrayList<String> list = new ArrayList<>();
 
     public static void start(Context context, String projectId) {
         Intent intent = new Intent(context, OrderDetailsActivity.class);
@@ -83,6 +88,16 @@ public class OrderDetailsActivity extends BaseActivity {
         ivCad = (ImageView) findViewById(R.id.iv_image_cad_order_details);
         ivInfo = (ImageView) findViewById(R.id.iv_image_info_order_details);
         ivTable = (ImageView) findViewById(R.id.iv_image_table_order_details);
+        ivCad.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PhotoPreview.builder()
+                        .setPhotos(list)
+                        .setCurrentItem(1)
+                        .setShowDeleteButton(true)
+                        .start(OrderDetailsActivity.this, PhotoPicker.REQUEST_CODE);
+            }
+        });
 
         llBox = (LinearLayout) findViewById(R.id.ll_box_order_details);
         tvName = (TextView) findViewById(R.id.tv_name_order_details);
@@ -112,6 +127,19 @@ public class OrderDetailsActivity extends BaseActivity {
         projectId = getIntent().getStringExtra("projectId");
         if (!TextUtils.isEmpty(projectId)) {
             getProjectDetail(projectId);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK && requestCode == PhotoPicker.REQUEST_CODE) {
+            if (data != null) {
+                ArrayList<String> photos = data.getStringArrayListExtra(PhotoPicker.KEY_SELECTED_PHOTOS);
+                for (int i = 0; i < photos.size(); i++) {
+                    Log.e("======", "=====" + photos.get(i));
+                }
+            }
         }
     }
 
@@ -147,6 +175,7 @@ public class OrderDetailsActivity extends BaseActivity {
         List<ProjectDetailsResponse.DataBean.CadImgListBean> cadImgs = data.getCadImgList();
         if (cadImgs != null && !cadImgs.isEmpty()) {
             String cadUrl = cadImgs.get(0).getImgUrl();
+            list.add(cadUrl);
             if (!TextUtils.isEmpty(cadUrl)) {
                 Glide.with(this)
                         .load(cadUrl)
@@ -161,6 +190,7 @@ public class OrderDetailsActivity extends BaseActivity {
         List<ProjectDetailsResponse.DataBean.StateImgListBean> stateImages = data.getStateImgList();
         if (stateImages != null && !stateImages.isEmpty()) {
             String stateUrl = stateImages.get(0).getImgUrl();
+            list.add(stateUrl);
             if (!TextUtils.isEmpty(stateUrl)) {
                 Glide.with(this).
                         load(stateUrl)
@@ -175,6 +205,7 @@ public class OrderDetailsActivity extends BaseActivity {
         List<ProjectDetailsResponse.DataBean.BudgetImgListBean> budgetImgs = data.getBudgetImgList();
         if (budgetImgs != null && !budgetImgs.isEmpty()) {
             String budgetUrl = budgetImgs.get(0).getImgUrl();
+            list.add(budgetUrl);
             if (!TextUtils.isEmpty(budgetUrl)) {
                 Glide.with(this)
                         .load(budgetUrl)

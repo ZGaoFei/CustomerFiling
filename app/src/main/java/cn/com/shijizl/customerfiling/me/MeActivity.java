@@ -1,10 +1,15 @@
 package cn.com.shijizl.customerfiling.me;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -13,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.soundcloud.android.crop.Crop;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -21,6 +27,7 @@ import cn.com.shijizl.customerfiling.R;
 import cn.com.shijizl.customerfiling.base.BaseActivity;
 import cn.com.shijizl.customerfiling.net.NetModel;
 import cn.com.shijizl.customerfiling.net.UpdateModel;
+import cn.com.shijizl.customerfiling.net.model.EmptyResponse;
 import cn.com.shijizl.customerfiling.net.model.UpdateImageResponse;
 import cn.com.shijizl.customerfiling.net.model.UserInfoResponse;
 import cn.com.shijizl.customerfiling.utils.GlideCircleTransform;
@@ -41,6 +48,7 @@ public class MeActivity extends BaseActivity {
 
     private String imageUrl;
     private String name;
+    private boolean isFirst = true;
 
     public static void start(Context context) {
         Intent intent = new Intent(context, MeActivity.class);
@@ -119,13 +127,16 @@ public class MeActivity extends BaseActivity {
                 if (response.body().getCode() == 0) {
                     UserInfoResponse.DataBean data = response.body().getData();
                     if (data != null) {
-                        imageUrl = data.getProfile();
-                        Glide.with(MeActivity.this)
-                                .load(data.getProfile())
-                                .override(200, 200)
-                                .bitmapTransform(new GlideCircleTransform(MeActivity.this))
-                                .crossFade(1000)
-                                .into(ivHeader);
+                        if (isFirst) {
+                            isFirst = false;
+                            imageUrl = data.getProfile();
+                            Glide.with(MeActivity.this)
+                                    .load(data.getProfile())
+                                    .override(200, 200)
+                                    .bitmapTransform(new GlideCircleTransform(MeActivity.this))
+                                    .crossFade(1000)
+                                    .into(ivHeader);
+                        }
                         tvName.setText(data.getUserName());
                         tvNick.setText(data.getRealName());
                         name = data.getRealName();
@@ -154,21 +165,60 @@ public class MeActivity extends BaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
+        if (data == null) {
+            return;
+        }
         if (resultCode == RESULT_OK && requestCode == PhotoPicker.REQUEST_CODE) {
-            if (data != null) {
-                ArrayList<String> photos = data.getStringArrayListExtra(PhotoPicker.KEY_SELECTED_PHOTOS);
-                String image = photos.get(0);
-                updateImage(image);
-                Glide.with(MeActivity.this)
-                        .load(image)
-                        .override(200, 200)
-                        .bitmapTransform(new GlideCircleTransform(MeActivity.this))
-                        .crossFade(1000)
-                        .placeholder(R.drawable.place_holder)
-                        .into(ivHeader);
+            ArrayList<String> photos = data.getStringArrayListExtra(PhotoPicker.KEY_SELECTED_PHOTOS);
+            String image = photos.get(0);
+            String[] split = image.split("/");
+            Uri parse = Uri.parse("file://" + image);
+            File file = new File(getCacheDir(), "cropped" + split[split.length - 1]);
+            Uri destination = Uri.fromFile(file);
+            Crop.of(parse, destination).asSquare().start(MeActivity.this);
+        } else {
+            Uri output = Crop.getOutput(data);
+            String url = getAbsoluteImagePath(this, output);
+
+            updateImage(url);
+            Glide.with(MeActivity.this)
+                    .load(url)
+                    .override(200, 200)
+                    .bitmapTransform(new GlideCircleTransform(MeActivity.this))
+                    .crossFade(1000)
+                    .into(ivHeader);
+        }
+    }
+
+    public String getAbsoluteImagePath(Activity activity, Uri contentUri) {
+
+        //如果是对媒体文件，在android开机的时候回去扫描，然后把路径添加到数据库中。
+        //由打印的contentUri可以看到：2种结构。正常的是：content://那么这种就要去数据库读取path。
+        //另外一种是Uri是 file:///那么这种是 Uri.fromFile(File file);得到的
+        System.out.println(contentUri);
+
+        String[] projection = {MediaStore.Images.Media.DATA};
+        String urlpath;
+        CursorLoader loader = new CursorLoader(activity, contentUri, projection, null, null, null);
+        Cursor cursor = loader.loadInBackground();
+        try {
+            int column_index = cursor.getColumnIndex(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            urlpath = cursor.getString(column_index);
+            //如果是正常的查询到数据库。然后返回结构
+            return urlpath;
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        } finally {
+            if (cursor != null) {
+                cursor.close();
             }
         }
+
+        //如果是文件。Uri.fromFile(File file)生成的uri。那么下面这个方法可以得到结果
+        urlpath = contentUri.getPath();
+        return urlpath;
     }
 
     private void updateImage(String url) {
@@ -191,6 +241,8 @@ public class MeActivity extends BaseActivity {
                     if (data != null) {
                         imageUrl = data.getUrl();
                         Toast.makeText(MeActivity.this, "上传图片成功", Toast.LENGTH_SHORT).show();
+
+                        updateUserInfo(imageUrl, name);
                     }
                 } else {
                     Toast.makeText(MeActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
@@ -208,6 +260,29 @@ public class MeActivity extends BaseActivity {
         RequestBody requestFile = RequestBody.create(MediaType.parse("image/*"), file);
 
         return MultipartBody.Part.createFormData(partName, file.getName(), requestFile);
+    }
+
+    private void updateUserInfo(String profile, String realName) {
+        if (!Utils.isNetworkOn()) {
+            Toast.makeText(this, "网络异常，请检查您的网络！", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Call<EmptyResponse> call = NetModel.getInstance().updateUserInfo(SettingUtils.instance().getToken(), profile, realName);
+        call.enqueue(new Callback<EmptyResponse>() {
+            @Override
+            public void onResponse(Call<EmptyResponse> call, Response<EmptyResponse> response) {
+                if (response.body().getCode() == 0) {
+                    Toast.makeText(MeActivity.this, "更新用户信息成功", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(MeActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<EmptyResponse> call, Throwable t) {
+                Toast.makeText(MeActivity.this, "更新用户信息失败", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void showDialog() {
