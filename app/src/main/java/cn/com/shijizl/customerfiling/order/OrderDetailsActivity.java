@@ -3,6 +3,8 @@ package cn.com.shijizl.customerfiling.order;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -11,8 +13,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +23,8 @@ import cn.com.shijizl.customerfiling.net.NetModel;
 import cn.com.shijizl.customerfiling.net.model.CustomerResponse;
 import cn.com.shijizl.customerfiling.net.model.EmptyResponse;
 import cn.com.shijizl.customerfiling.net.model.ProjectDetailsResponse;
+import cn.com.shijizl.customerfiling.net.model.ProjectDetailsResponse.DataBean;
+import cn.com.shijizl.customerfiling.order.adapter.ImageAdapter;
 import cn.com.shijizl.customerfiling.utils.SettingUtils;
 import cn.com.shijizl.customerfiling.utils.Utils;
 import me.iwf.photopicker.PhotoPicker;
@@ -34,19 +36,18 @@ import retrofit2.Response;
 public class OrderDetailsActivity extends BaseActivity {
     private ImageView ivUpdate;
     private TextView tvTitle;
-    private ImageView ivCad;
-    private ImageView ivInfo;
-    private ImageView ivTable;
     private LinearLayout llBox;
     private TextView tvName, tvPhone, tvAddress, tvTime;
     private LinearLayout llTime;
     private Button btTake;
+    private RecyclerView rvCad, rvInfo, rvTable;
 
     private String projectId;
     private String projectTitle;
     private int customerId = 0;
     private int states;
-    private ArrayList<String> list = new ArrayList<>();
+
+    private boolean isFresh = true;
 
     public static void start(Context context, String projectId) {
         Intent intent = new Intent(context, OrderDetailsActivity.class);
@@ -65,7 +66,10 @@ public class OrderDetailsActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        initData();
+        if (isFresh) {
+            isFresh = false;
+            initData();
+        }
     }
 
     private void initView() {
@@ -80,24 +84,15 @@ public class OrderDetailsActivity extends BaseActivity {
         ivUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                isFresh = true;
                 UpdateOrderActivity.start(OrderDetailsActivity.this, projectId, customerId);
             }
         });
 
         tvTitle = (TextView) findViewById(R.id.tv_title_order_details);
-        ivCad = (ImageView) findViewById(R.id.iv_image_cad_order_details);
-        ivInfo = (ImageView) findViewById(R.id.iv_image_info_order_details);
-        ivTable = (ImageView) findViewById(R.id.iv_image_table_order_details);
-        ivCad.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                PhotoPreview.builder()
-                        .setPhotos(list)
-                        .setCurrentItem(1)
-                        .setShowDeleteButton(true)
-                        .start(OrderDetailsActivity.this, PhotoPicker.REQUEST_CODE);
-            }
-        });
+        rvCad = (RecyclerView) findViewById(R.id.rv_image_cad_order_details);
+        rvInfo = (RecyclerView) findViewById(R.id.rv_image_info_order_details);
+        rvTable = (RecyclerView) findViewById(R.id.rv_image_table_order_details);
 
         llBox = (LinearLayout) findViewById(R.id.ll_box_order_details);
         tvName = (TextView) findViewById(R.id.tv_name_order_details);
@@ -169,54 +164,15 @@ public class OrderDetailsActivity extends BaseActivity {
         });
     }
 
-    private void setTop(ProjectDetailsResponse.DataBean data) {
+    private void setTop(DataBean data) {
         projectTitle = data.getTitle();
         tvTitle.setText(data.getTitle());
-        List<ProjectDetailsResponse.DataBean.CadImgListBean> cadImgs = data.getCadImgList();
-        if (cadImgs != null && !cadImgs.isEmpty()) {
-            String cadUrl = cadImgs.get(0).getImgUrl();
-            list.add(cadUrl);
-            if (!TextUtils.isEmpty(cadUrl)) {
-                Glide.with(this)
-                        .load(cadUrl)
-                        .override(400, 400)
-                        .fitCenter()
-                        .placeholder(R.drawable.place_holder)
-                        .into(ivCad);
-            }
-        }else {
-            ivCad.setImageResource(R.drawable.place_holder);
-        }
-        List<ProjectDetailsResponse.DataBean.StateImgListBean> stateImages = data.getStateImgList();
-        if (stateImages != null && !stateImages.isEmpty()) {
-            String stateUrl = stateImages.get(0).getImgUrl();
-            list.add(stateUrl);
-            if (!TextUtils.isEmpty(stateUrl)) {
-                Glide.with(this).
-                        load(stateUrl)
-                        .override(400, 400)
-                        .fitCenter()
-                        .placeholder(R.drawable.place_holder)
-                        .into(ivTable);
-            }
-        } else {
-            ivInfo.setImageResource(R.drawable.place_holder);
-        }
-        List<ProjectDetailsResponse.DataBean.BudgetImgListBean> budgetImgs = data.getBudgetImgList();
-        if (budgetImgs != null && !budgetImgs.isEmpty()) {
-            String budgetUrl = budgetImgs.get(0).getImgUrl();
-            list.add(budgetUrl);
-            if (!TextUtils.isEmpty(budgetUrl)) {
-                Glide.with(this)
-                        .load(budgetUrl)
-                        .override(400, 400)
-                        .fitCenter()
-                        .placeholder(R.drawable.place_holder)
-                        .into(ivInfo);
-            }
-        }else {
-            ivTable.setImageResource(R.drawable.place_holder);
-        }
+        ArrayList<String> listCad = getList(data, 0);
+        setAdapter(rvCad, listCad);
+        ArrayList<String> listInfo = getList(data, 1);
+        setAdapter(rvInfo, listInfo);
+        ArrayList<String> listTable = getList(data, 2);
+        setAdapter(rvTable, listTable);
 
         int state = data.getStatus();
         states = state;
@@ -298,6 +254,70 @@ public class OrderDetailsActivity extends BaseActivity {
             @Override
             public void onFailure(Call<EmptyResponse> call, Throwable t) {
                 Toast.makeText(OrderDetailsActivity.this, "网络异常，请检查您的网络！", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private ArrayList<String> getList(DataBean data, int type) {
+        ArrayList<String> strList = new ArrayList<>();
+        if (data != null) {
+            switch (type) {
+                case 0:
+                    List<DataBean.CadImgListBean> cadImgs = data.getCadImgList();
+                    if (cadImgs != null && !cadImgs.isEmpty()) {
+                        for (int i = 0; i < cadImgs.size(); i++) {
+                            strList.add(cadImgs.get(i).getImgUrl());
+                        }
+                    }else {
+
+                    }
+                    break;
+                case 1:
+                    List<DataBean.StateImgListBean> stateImages = data.getStateImgList();
+                    if (stateImages != null && !stateImages.isEmpty()) {
+                        for (int i = 0; i < stateImages.size(); i++) {
+                            strList.add(stateImages.get(i).getImgUrl());
+                        }
+                    } else {
+
+                    }
+                    break;
+                case 2:
+                    List<DataBean.BudgetImgListBean> budgetImgs = data.getBudgetImgList();
+                    if (budgetImgs != null && !budgetImgs.isEmpty()) {
+                        for (int i = 0; i < budgetImgs.size(); i++) {
+                            strList.add(budgetImgs.get(i).getImgUrl());
+                        }
+                    }else {
+
+                    }
+                    break;
+            }
+        }
+        return strList;
+    }
+
+    private void setAdapter(RecyclerView recyclerView, final ArrayList<String> list) {
+        ImageAdapter adapter = new ImageAdapter(this, list);
+
+        GridLayoutManager manager = new GridLayoutManager(this, 4);
+        manager.setSmoothScrollbarEnabled(true);
+        manager.setAutoMeasureEnabled(true);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setNestedScrollingEnabled(false);
+        recyclerView.setLayoutManager(manager);
+
+        recyclerView.setAdapter(adapter);
+
+        adapter.setOnItemClickListener(new ImageAdapter.ItemClickListener() {
+            @Override
+            public void onItemClickListener(View view, int position) {
+                isFresh = false;
+                PhotoPreview.builder()
+                        .setPhotos(list)
+                        .setCurrentItem(position)
+                        .setShowDeleteButton(false)
+                        .start(OrderDetailsActivity.this, PhotoPicker.REQUEST_CODE);
             }
         });
     }
