@@ -48,6 +48,15 @@ public class ProjectScheduleResponse {
 
         private boolean isChecked;
         private boolean isEnable;
+        private long createTime;
+
+        public long getCreateTime() {
+            return createTime;
+        }
+
+        public void setCreateTime(long createTime) {
+            this.createTime = createTime;
+        }
 
         public boolean isEnable() {
             return isEnable;

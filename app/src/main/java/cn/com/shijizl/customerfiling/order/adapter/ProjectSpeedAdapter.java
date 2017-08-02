@@ -13,6 +13,7 @@ import java.util.List;
 
 import cn.com.shijizl.customerfiling.R;
 import cn.com.shijizl.customerfiling.net.model.ProjectScheduleResponse;
+import cn.com.shijizl.customerfiling.utils.Utils;
 
 public class ProjectSpeedAdapter extends RecyclerView.Adapter<ProjectSpeedAdapter.ViewHolder> {
 
@@ -45,6 +46,9 @@ public class ProjectSpeedAdapter extends RecyclerView.Adapter<ProjectSpeedAdapte
         holder.textView.setText(list.get(position).getStepDesc());
         holder.radioButton.setChecked(list.get(position).isChecked());
         holder.radioButton.setEnabled(list.get(position).isEnable());
+        if (list.get(position).getCreateTime() > 0) {
+            holder.tvTime.setText(Utils.paseTimeAll(list.get(position).getCreateTime()));
+        }
         holder.radioButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

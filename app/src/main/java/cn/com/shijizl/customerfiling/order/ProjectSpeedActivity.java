@@ -1,6 +1,8 @@
 package cn.com.shijizl.customerfiling.order;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -71,14 +73,7 @@ public class ProjectSpeedActivity extends BaseActivity {
             public void onClick(View view, int position) {
                 boolean checked = list.get(position).isChecked();
                 if (!checked) {
-                    list.get(position).setChecked(true);
-                    list.get(position).setEnable(false);
-                    adapter.updateItem(position);
-                    if (position + 1 <= list.size() - 1) {
-                        list.get(position + 1).setEnable(true);
-                        adapter.updateItem(position + 1);
-                    }
-                    updateProjectSchedule(projectId, String.valueOf(list.get(position).getScheduleCode()), list.get(position).getStepDesc());
+                    showSureDialog(position);
                 }
             }
         });
@@ -89,7 +84,7 @@ public class ProjectSpeedActivity extends BaseActivity {
         projectTitle = getIntent().getStringExtra("projectTitle");
     }
 
-    private void updateProjectSchedule(String projectId, String code, String stepDesc) {
+    private void updateProjectSchedule(final int position, String projectId, String code, String stepDesc) {
         if (!Utils.isNetworkOn()) {
             Toast.makeText(this, "网络异常，请检查您的网络！", Toast.LENGTH_SHORT).show();
             return;
@@ -100,6 +95,14 @@ public class ProjectSpeedActivity extends BaseActivity {
             public void onResponse(Call<EmptyResponse> call, Response<EmptyResponse> response) {
                 if (response.body().getCode() == 0) {
                     Toast.makeText(ProjectSpeedActivity.this, "进度更新成功", Toast.LENGTH_SHORT).show();
+                    list.get(position).setChecked(true);
+                    list.get(position).setEnable(false);
+                    list.get(position).setCreateTime(Utils.getCurrentTimeMillis());
+                    adapter.updateItem(position);
+                    if (position + 1 <= list.size() - 1) {
+                        list.get(position + 1).setEnable(true);
+                        adapter.updateItem(position + 1);
+                    }
                 }
             }
 
@@ -164,6 +167,7 @@ public class ProjectSpeedActivity extends BaseActivity {
             for (int j = 0; j < listProject.size(); j++) {
                 if (listProject.get(j).getScheduleCode() == list.get(i).getScheduleCode()) {
                     list.get(i).setChecked(true);
+                    list.get(i).setCreateTime(listProject.get(j).getCreateTime());
                     result = i;
                     break;
                 } else {
@@ -178,5 +182,25 @@ public class ProjectSpeedActivity extends BaseActivity {
         }
 
         adapter.update(list);
+    }
+
+    private void showSureDialog(final int position) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(ProjectSpeedActivity.this);
+        builder.setMessage("是否完成 " + list.get(position).getStepDesc() + " 该进度？");
+        builder.setTitle("提示");
+        builder.setPositiveButton("是", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                updateProjectSchedule(position, projectId, String.valueOf(list.get(position).getScheduleCode()), list.get(position).getStepDesc());
+                dialog.dismiss();
+            }
+        });
+        builder.setNegativeButton("否", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.create().show();
     }
 }

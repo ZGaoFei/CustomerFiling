@@ -1,8 +1,5 @@
 package cn.com.shijizl.customerfiling.net.model;
 
-/**
- * Created by zgfei on 2017/7/18.
- */
 
 public class EmptyResponse {
 
