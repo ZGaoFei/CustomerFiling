@@ -130,22 +130,24 @@ public class MainActivity extends BaseActivity {
         call.enqueue(new Callback<ProjectListResponse>() {
             @Override
             public void onResponse(Call<ProjectListResponse> call, Response<ProjectListResponse> response) {
-                if (response.body().getCode() == 0) {
-                    List<ProjectListResponse.DataBean> data = response.body().getData();
-                    if (list != null && !list.isEmpty()) {
-                        list.clear();
-                    }
-                    if (data != null && !data.isEmpty()) {
-                        list.addAll(data);
-                        adapter.updateData(list);
-                        refreshLayout.finishRefresh();
-                        llEmpty.setVisibility(View.GONE);
+                if (response.body() != null) {
+                    if (response.body().getCode() == 0) {
+                        List<ProjectListResponse.DataBean> data = response.body().getData();
+                        if (list != null && !list.isEmpty()) {
+                            list.clear();
+                        }
+                        if (data != null && !data.isEmpty()) {
+                            list.addAll(data);
+                            adapter.updateData(list);
+                            refreshLayout.finishRefresh();
+                            llEmpty.setVisibility(View.GONE);
+                        } else {
+                            llEmpty.setVisibility(View.VISIBLE);
+                        }
                     } else {
-                        llEmpty.setVisibility(View.VISIBLE);
+                        Toast.makeText(MainActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                        llEmpty.setVisibility(View.GONE);
                     }
-                } else {
-                    Toast.makeText(MainActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
-                    llEmpty.setVisibility(View.GONE);
                 }
             }
 
@@ -192,17 +194,19 @@ public class MainActivity extends BaseActivity {
         call.enqueue(new Callback<UserInfoResponse>() {
             @Override
             public void onResponse(Call<UserInfoResponse> call, Response<UserInfoResponse> response) {
-                if (response.body().getCode() == 0) {
-                    UserInfoResponse.DataBean data = response.body().getData();
-                    if (data != null) {
-                        Glide.with(MainActivity.this)
-                                .load(data.getProfile())
-                                .override(200, 200)
-                                .bitmapTransform(new GlideCircleTransform(MainActivity.this))
-                                .crossFade(1000)
-                                .into(ivUser);
+                if (response.body() != null) {
+                    if (response.body().getCode() == 0) {
+                        UserInfoResponse.DataBean data = response.body().getData();
+                        if (data != null) {
+                            Glide.with(MainActivity.this)
+                                    .load(data.getProfile())
+                                    .override(200, 200)
+                                    .bitmapTransform(new GlideCircleTransform(MainActivity.this))
+                                    .crossFade(1000)
+                                    .into(ivUser);
+                        }
+                    } else {
                     }
-                } else {
                 }
             }
 

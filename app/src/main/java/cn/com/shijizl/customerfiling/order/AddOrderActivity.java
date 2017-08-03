@@ -3,6 +3,8 @@ package cn.com.shijizl.customerfiling.order;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
@@ -10,7 +12,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 
 import java.io.File;
@@ -24,9 +25,11 @@ import cn.com.shijizl.customerfiling.net.UpdateModel;
 import cn.com.shijizl.customerfiling.net.model.EmptyResponse;
 import cn.com.shijizl.customerfiling.net.model.ImageResponse;
 import cn.com.shijizl.customerfiling.net.model.UpdateImageResponse;
+import cn.com.shijizl.customerfiling.order.adapter.AddImageAdapter;
 import cn.com.shijizl.customerfiling.utils.SettingUtils;
 import cn.com.shijizl.customerfiling.utils.Utils;
 import me.iwf.photopicker.PhotoPicker;
+import me.iwf.photopicker.PhotoPreview;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -35,16 +38,12 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class AddOrderActivity extends BaseActivity {
-    private ImageView ivImageCad;
-    private ImageView ivImageInfo;
-    private ImageView ivImageTable;
-    private ImageView ivAddImage;
-    private ImageView ivAddInfo;
-    private ImageView ivAddTable;
-
-    private ImageResponse cad;
-    private ImageResponse info;
-    private ImageResponse table;
+    private ArrayList<ImageResponse> cadList = new ArrayList<>();
+    private ArrayList<ImageResponse> infoList = new ArrayList<>();
+    private ArrayList<ImageResponse> tableList = new ArrayList<>();
+    private AddImageAdapter cadAdapter;
+    private AddImageAdapter infoAdapter;
+    private AddImageAdapter tableAdapter;
 
     public static void start(Context context) {
         Intent intent = new Intent(context, AddOrderActivity.class);
@@ -68,50 +67,21 @@ public class AddOrderActivity extends BaseActivity {
             }
         });
 
-        ivImageCad = (ImageView) findViewById(R.id.iv_image_cad_order);
-        ivImageInfo = (ImageView) findViewById(R.id.iv_image_info_order);
-        ivImageTable = (ImageView) findViewById(R.id.iv_image_table_order);
-        ivAddImage = (ImageView) findViewById(R.id.iv_add_image_order);
-        ivAddInfo = (ImageView) findViewById(R.id.iv_add_info_order);
-        ivAddTable = (ImageView) findViewById(R.id.iv_add_table_order);
-        ivImageCad.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                checkImage(0);
-            }
-        });
-        ivImageInfo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                checkImage(1);
-            }
-        });
-        ivImageTable.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                checkImage(2);
-            }
-        });
-        ivAddImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                checkImage(0);
-            }
-        });
-        ivAddInfo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                checkImage(1);
-            }
-        });
-        ivAddTable.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                checkImage(2);
-            }
-        });
-
         final EditText etTitle = (EditText) findViewById(R.id.et_phone_add_order);
+        RecyclerView rvCad = (RecyclerView) findViewById(R.id.rv_image_cad_add_order);
+        RecyclerView rvInfo = (RecyclerView) findViewById(R.id.rv_image_info_add_order);
+        RecyclerView rvTable = (RecyclerView) findViewById(R.id.rv_image_table_add_order);
+
+        cadList.add(addEmptyImage());
+        infoList.add(addEmptyImage());
+        tableList.add(addEmptyImage());
+
+        cadAdapter = new AddImageAdapter(this, cadList);
+        infoAdapter = new AddImageAdapter(this, infoList);
+        tableAdapter = new AddImageAdapter(this, tableList);
+        setAdapter(rvCad, cadList, cadAdapter, 0, 10);
+        setAdapter(rvInfo, infoList, infoAdapter, 1, 11);
+        setAdapter(rvTable, tableList, tableAdapter, 2, 12);
 
         Button btNext = (Button) findViewById(R.id.bt_taker_order);
         btNext.setOnClickListener(new View.OnClickListener() {
@@ -120,15 +90,12 @@ public class AddOrderActivity extends BaseActivity {
                 String trim = etTitle.getText().toString().trim();
                 if (TextUtils.isEmpty(trim)) {
                     Toast.makeText(AddOrderActivity.this, "请添加标题", Toast.LENGTH_SHORT).show();
-                } else if (cad == null || info == null || table == null){
-                    Toast.makeText(AddOrderActivity.this, "请完善信息", Toast.LENGTH_SHORT).show();
                 } else {
-                    String cadString = jsonToString(cad);
-                    String infoString = jsonToString(info);
-                    String tableString = jsonToString(table);
+                    String cadString = jsonToString(cadList);
+                    String infoString = jsonToString(infoList);
+                    String tableString = jsonToString(tableList);
                     addOrUpadteProject(trim, cadString, infoString, tableString);
                 }
-
             }
         });
     }
@@ -140,25 +107,39 @@ public class AddOrderActivity extends BaseActivity {
         if (resultCode == RESULT_OK) {
             if (data != null) {
                 ArrayList<String> photos = data.getStringArrayListExtra(PhotoPicker.KEY_SELECTED_PHOTOS);
-                String image = photos.get(0);
                 switch (requestCode) {
                     case 0:
-                        updateImage(image, 0);
+                        takeImage(photos, 0);
                         break;
                     case 1:
-                        updateImage(image, 1);
+                        takeImage(photos, 1);
                         break;
                     case 2:
-                        updateImage(image, 2);
+                        takeImage(photos, 2);
+                        break;
+                    case 10:
+                        deleteImageNext(photos, 10);
+                        break;
+                    case 11:
+                        deleteImageNext(photos, 11);
+                        break;
+                    case 12:
+                        deleteImageNext(photos, 12);
                         break;
                 }
             }
         }
     }
 
+    private void takeImage(ArrayList<String> photos, int type) {
+        for (int i = 0; i < photos.size(); i++) {
+            updateImage(photos.get(i), type);
+        }
+    }
+
     private void checkImage(int requestCode) {
         PhotoPicker.builder()
-                .setPhotoCount(1)
+                .setPhotoCount(9)
                 .setShowCamera(true)
                 .setShowGif(true)
                 .setPreviewEnabled(false)
@@ -208,11 +189,13 @@ public class AddOrderActivity extends BaseActivity {
         call.enqueue(new Callback<EmptyResponse>() {
             @Override
             public void onResponse(Call<EmptyResponse> call, Response<EmptyResponse> response) {
-                if (response.body().getCode() == 0) {
-                    Toast.makeText(AddOrderActivity.this, "提交成功", Toast.LENGTH_SHORT).show();
-                    finish();
-                } else {
-                    Toast.makeText(AddOrderActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                if (response.body() != null) {
+                    if (response.body().getCode() == 0) {
+                        Toast.makeText(AddOrderActivity.this, "提交成功", Toast.LENGTH_SHORT).show();
+                        finish();
+                    } else {
+                        Toast.makeText(AddOrderActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
 
@@ -226,37 +209,31 @@ public class AddOrderActivity extends BaseActivity {
     private void setImage(int type, UpdateImageResponse.DataBean data) {
         switch (type) {
             case 0:
-                cad = getImageResponse(data);
-                ivAddImage.setVisibility(View.GONE);
-                ivImageCad.setVisibility(View.VISIBLE);
-                Glide.with(AddOrderActivity.this)
-                        .load(data.getUrl())
-                        .override(400, 400)
-                        .fitCenter()
-                        .placeholder(R.drawable.place_holder)
-                        .into(ivImageCad);
+                ImageResponse cad = getImageResponse(data);
+                if (cadList.size() < 13) {
+                    cadList.add(0, cad);
+                    cadAdapter.update(cadList);
+                } else {
+                    Toast.makeText(this, "最多只能选择12张图片", Toast.LENGTH_SHORT).show();
+                }
                 break;
             case 1:
-                info = getImageResponse(data);
-                ivAddInfo.setVisibility(View.GONE);
-                ivImageInfo.setVisibility(View.VISIBLE);
-                Glide.with(AddOrderActivity.this)
-                        .load(data.getUrl())
-                        .override(400, 400)
-                        .fitCenter()
-                        .placeholder(R.drawable.place_holder)
-                        .into(ivImageInfo);
+                ImageResponse info = getImageResponse(data);
+                if (infoList.size() < 13) {
+                    infoList.add(0, info);
+                    infoAdapter.update(infoList);
+                } else {
+                    Toast.makeText(this, "最多只能选择12张图片", Toast.LENGTH_SHORT).show();
+                }
                 break;
             case 2:
-                table = getImageResponse(data);
-                ivAddTable.setVisibility(View.GONE);
-                ivImageTable.setVisibility(View.VISIBLE);
-                Glide.with(AddOrderActivity.this)
-                        .load(data.getUrl())
-                        .override(400, 400)
-                        .fitCenter()
-                        .placeholder(R.drawable.place_holder)
-                        .into(ivImageTable);
+                ImageResponse table = getImageResponse(data);
+                if (tableList.size() < 13) {
+                    tableList.add(0, table);
+                    tableAdapter.update(tableList);
+                } else {
+                    Toast.makeText(this, "最多只能选择12张图片", Toast.LENGTH_SHORT).show();
+                }
                 break;
         }
     }
@@ -269,12 +246,94 @@ public class AddOrderActivity extends BaseActivity {
         return new ImageResponse(url, width, height);
     }
 
-    private String jsonToString(ImageResponse response) {
-        List<ImageResponse> list = new ArrayList<>();
-        list.add(response);
-
+    private String jsonToString(List<ImageResponse> list) {
         Gson gson = new Gson();
-        String toJson = gson.toJson(list);
-        return toJson;
+        return gson.toJson(list);
     }
+
+    private void setAdapter(RecyclerView recyclerView, final ArrayList<ImageResponse> list, AddImageAdapter adapter, final int type, final int deleteType) {
+        GridLayoutManager manager = new GridLayoutManager(this, 4);
+        manager.setSmoothScrollbarEnabled(true);
+        manager.setAutoMeasureEnabled(true);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setNestedScrollingEnabled(false);
+        recyclerView.setLayoutManager(manager);
+
+        recyclerView.setAdapter(adapter);
+
+        adapter.setOnItemClickListener(new AddImageAdapter.ItemClickListener() {
+            @Override
+            public void onItemClickListener(View view, int position) {
+                if (list != null && !list.isEmpty()) {
+                    PhotoPreview.builder()
+                            .setPhotos(toStringList(list))
+                            .setCurrentItem(position)
+                            .setShowDeleteButton(true)
+                            .start(AddOrderActivity.this, deleteType);
+                }
+            }
+
+            @Override
+            public void onAddItemClickListener(View view, int position) {
+                checkImage(type);
+            }
+        });
+    }
+
+    private ImageResponse addEmptyImage() {
+        return new ImageResponse(null, 0, 0);
+    }
+
+    private ArrayList<String> toStringList(List<ImageResponse> list) {
+        ArrayList<String> stringList = new ArrayList<>();
+        for (int i = 0; i < list.size() - 1; i++) {
+            stringList.add(list.get(i).getImgUrl());
+        }
+
+        return stringList;
+    }
+
+    private void deleteImageNext(ArrayList<String> photos, int type) {
+        switch (type) {
+            case 10:
+                deleteImage(cadList, photos);
+                cadAdapter.update(cadList);
+                break;
+            case 11:
+                deleteImage(infoList, photos);
+                infoAdapter.update(infoList);
+                break;
+            case 12:
+                deleteImage(tableList, photos);
+                tableAdapter.update(tableList);
+                break;
+        }
+    }
+
+    private void deleteImage(ArrayList<ImageResponse> list, ArrayList<String> photos) {
+        if (photos.isEmpty()) {
+            list.clear();
+            list.add(addEmptyImage());
+        } else {
+            for (int i = 0; i < list.size(); i++) {
+                boolean isHave = false;
+                for (int j = 0; j < photos.size(); j++) {
+                    if (!TextUtils.isEmpty(list.get(i).getImgUrl())) {
+                        if (list.get(i).getImgUrl().equals(photos.get(j))) {
+                            isHave = true;
+                            break;
+                        } else {
+                            isHave = false;
+                        }
+                    } else {
+                        isHave = true;
+                    }
+                }
+                if (!isHave) {
+                    list.remove(i);
+                }
+            }
+        }
+    }
+
 }

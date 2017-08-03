@@ -13,6 +13,7 @@ import com.bumptech.glide.Glide;
 import java.util.List;
 
 import cn.com.shijizl.customerfiling.R;
+import cn.com.shijizl.customerfiling.utils.GlideRoundTransform;
 
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> {
     private ItemClickListener listener;
@@ -41,6 +42,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
                 .load(list.get(position))
                 .override(300, 300)
                 .fitCenter()
+                .transform(new GlideRoundTransform(context))
                 .placeholder(R.drawable.place_holder)
                 .into(holder.imageView);
 
