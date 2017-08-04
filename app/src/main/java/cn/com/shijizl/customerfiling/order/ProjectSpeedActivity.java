@@ -198,6 +198,9 @@ public class ProjectSpeedActivity extends BaseActivity {
         builder.setNegativeButton("否", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                list.get(position).setChecked(false);
+                list.get(position).setEnable(true);
+                adapter.updateItem(position);
                 dialog.dismiss();
             }
         });

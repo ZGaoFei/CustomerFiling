@@ -1,13 +1,17 @@
 package cn.com.shijizl.customerfiling.order;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -46,8 +50,7 @@ public class OrderDetailsActivity extends BaseActivity {
     private String projectTitle;
     private int customerId = 0;
     private int states;
-
-    private boolean isFresh = true;
+    private String name, phone, address;
 
     public static void start(Context context, String projectId) {
         Intent intent = new Intent(context, OrderDetailsActivity.class);
@@ -60,16 +63,14 @@ public class OrderDetailsActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order_details);
 
+        projectId = getIntent().getStringExtra("projectId");
         initView();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (isFresh) {
-            isFresh = false;
-            initData();
-        }
+        initData();
     }
 
     private void initView() {
@@ -84,8 +85,7 @@ public class OrderDetailsActivity extends BaseActivity {
         ivUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                isFresh = true;
-                UpdateOrderActivity.start(OrderDetailsActivity.this, projectId, customerId);
+                showSettingDialog();
             }
         });
 
@@ -119,22 +119,8 @@ public class OrderDetailsActivity extends BaseActivity {
     }
 
     private void initData() {
-        projectId = getIntent().getStringExtra("projectId");
         if (!TextUtils.isEmpty(projectId)) {
             getProjectDetail(projectId);
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK && requestCode == PhotoPicker.REQUEST_CODE) {
-            if (data != null) {
-                ArrayList<String> photos = data.getStringArrayListExtra(PhotoPicker.KEY_SELECTED_PHOTOS);
-                for (int i = 0; i < photos.size(); i++) {
-                    Log.e("======", "=====" + photos.get(i));
-                }
-            }
         }
     }
 
@@ -225,6 +211,9 @@ public class OrderDetailsActivity extends BaseActivity {
     }
 
     private void setBottom(CustomerResponse.DataBean data) {
+        name = data.getCustName();
+        phone = data.getPhoneNum();
+        address = data.getAddress();
         tvName.setText(data.getCustName());
         tvPhone.setText(data.getPhoneNum());
         tvAddress.setText(data.getAddress());
@@ -240,7 +229,6 @@ public class OrderDetailsActivity extends BaseActivity {
             @Override
             public void onResponse(Call<EmptyResponse> call, Response<EmptyResponse> response) {
                 if (response.body().getCode() == 0) {
-                    ivUpdate.setVisibility(View.GONE);
                     llTime.setVisibility(View.VISIBLE);
                     tvTime.setVisibility(View.VISIBLE);
                     tvTime.setText(Utils.paseTime(System.currentTimeMillis()));
@@ -273,22 +261,22 @@ public class OrderDetailsActivity extends BaseActivity {
                     }
                     break;
                 case 1:
-                    List<DataBean.StateImgListBean> stateImages = data.getStateImgList();
-                    if (stateImages != null && !stateImages.isEmpty()) {
-                        for (int i = 0; i < stateImages.size(); i++) {
-                            strList.add(stateImages.get(i).getImgUrl());
-                        }
-                    } else {
-
-                    }
-                    break;
-                case 2:
                     List<DataBean.BudgetImgListBean> budgetImgs = data.getBudgetImgList();
                     if (budgetImgs != null && !budgetImgs.isEmpty()) {
                         for (int i = 0; i < budgetImgs.size(); i++) {
                             strList.add(budgetImgs.get(i).getImgUrl());
                         }
                     }else {
+
+                    }
+                    break;
+                case 2:
+                    List<DataBean.StateImgListBean> stateImages = data.getStateImgList();
+                    if (stateImages != null && !stateImages.isEmpty()) {
+                        for (int i = 0; i < stateImages.size(); i++) {
+                            strList.add(stateImages.get(i).getImgUrl());
+                        }
+                    } else {
 
                     }
                     break;
@@ -312,12 +300,47 @@ public class OrderDetailsActivity extends BaseActivity {
         adapter.setOnItemClickListener(new ImageAdapter.ItemClickListener() {
             @Override
             public void onItemClickListener(View view, int position) {
-                isFresh = false;
                 PhotoPreview.builder()
                         .setPhotos(list)
                         .setCurrentItem(position)
                         .setShowDeleteButton(false)
                         .start(OrderDetailsActivity.this, PhotoPicker.REQUEST_CODE);
+            }
+        });
+    }
+
+    private void showSettingDialog() {
+        final Dialog dialog = new AlertDialog.Builder(this).create();
+        dialog.setCanceledOnTouchOutside(true);
+        Window window = dialog.getWindow();
+        window.setGravity(Gravity.BOTTOM);
+        window.setBackgroundDrawable(new BitmapDrawable());
+        dialog.show();
+        window.setContentView(R.layout.dialog_me_setting);
+        window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+        TextView btnSet = (TextView) window.findViewById(R.id.tv_me_setting_set);
+        TextView btnShare = (TextView) window.findViewById(R.id.tv_me_setting_order);
+        TextView btnCancel = (TextView) window.findViewById(R.id.tv_me_setting_cancel);
+
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+        btnShare.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AddOrderActivity.start(OrderDetailsActivity.this, projectId, projectTitle, String.valueOf(customerId), name, phone, address);
+                dialog.dismiss();
+            }
+        });
+        btnSet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AddCustomerActivity.start(OrderDetailsActivity.this, projectId, name, phone, address);
+                dialog.dismiss();
             }
         });
     }

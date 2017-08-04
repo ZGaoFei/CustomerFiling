@@ -65,8 +65,8 @@ public interface ApiService {
             @Field("accessToken") String accessToken,
             @Field("projectId") String projectId,
             @Field("title") String title,
-            @Field("budgetImgs") String budgetImgs,
             @Field("cadImgs") String cadImgs,
+            @Field("budgetImgs") String budgetImgs,
             @Field("stateImgs") String stateImgs
     );
 

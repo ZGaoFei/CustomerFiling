@@ -11,7 +11,6 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import cn.com.shijizl.customerfiling.R;
-import cn.com.shijizl.customerfiling.base.App;
 import cn.com.shijizl.customerfiling.base.BaseActivity;
 import cn.com.shijizl.customerfiling.net.NetModel;
 import cn.com.shijizl.customerfiling.net.model.EmptyResponse;
@@ -23,10 +22,22 @@ import retrofit2.Response;
 
 public class AddCustomerActivity extends BaseActivity {
     private String projectId;
+    private String name;
+    private String phone;
+    private String address;
 
     public static void start(Context context, String projectId) {
         Intent intent = new Intent(context, AddCustomerActivity.class);
         intent.putExtra("projectId", projectId);
+        context.startActivity(intent);
+    }
+
+    public static void start(Context context, String projectId, String name, String phone, String address) {
+        Intent intent = new Intent(context, AddCustomerActivity.class);
+        intent.putExtra("projectId", projectId);
+        intent.putExtra("name", name);
+        intent.putExtra("phone", phone);
+        intent.putExtra("address", address);
         context.startActivity(intent);
     }
 
@@ -35,8 +46,8 @@ public class AddCustomerActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_customer);
 
-        initView();
         initData();
+        initView();
     }
 
     private void initView() {
@@ -44,13 +55,22 @@ public class AddCustomerActivity extends BaseActivity {
         ivBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                App.getInstance().exit();
+                finish();
             }
         });
 
         final EditText etName = (EditText) findViewById(R.id.et_name_add_customer);
         final EditText etPhone = (EditText) findViewById(R.id.et_phone_add_customer);
         final EditText etAddress = (EditText) findViewById(R.id.et_address_add_customer);
+        if (!TextUtils.isEmpty(name)) {
+            etName.setText(name);
+        }
+        if (!TextUtils.isEmpty(phone)) {
+            etPhone.setText(phone);
+        }
+        if (!TextUtils.isEmpty(address)) {
+            etAddress.setText(address);
+        }
         Button button = (Button) findViewById(R.id.bt_taker_add_customer);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -74,6 +94,9 @@ public class AddCustomerActivity extends BaseActivity {
 
     private void initData() {
         projectId = getIntent().getStringExtra("projectId");
+        name = getIntent().getStringExtra("name");
+        phone = getIntent().getStringExtra("phone");
+        address = getIntent().getStringExtra("address");
     }
 
     private void addCustomerInfo(String projectId, String customerId, String custName, String phoneNum, String address) {

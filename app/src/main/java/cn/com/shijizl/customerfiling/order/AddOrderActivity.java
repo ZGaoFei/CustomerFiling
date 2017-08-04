@@ -24,6 +24,7 @@ import cn.com.shijizl.customerfiling.net.NetModel;
 import cn.com.shijizl.customerfiling.net.UpdateModel;
 import cn.com.shijizl.customerfiling.net.model.EmptyResponse;
 import cn.com.shijizl.customerfiling.net.model.ImageResponse;
+import cn.com.shijizl.customerfiling.net.model.ProjectDetailsResponse;
 import cn.com.shijizl.customerfiling.net.model.UpdateImageResponse;
 import cn.com.shijizl.customerfiling.order.adapter.AddImageAdapter;
 import cn.com.shijizl.customerfiling.utils.SettingUtils;
@@ -45,8 +46,23 @@ public class AddOrderActivity extends BaseActivity {
     private AddImageAdapter infoAdapter;
     private AddImageAdapter tableAdapter;
 
+    private String projectId;
+    private String title;
+    private String customerId, custName, phoneNum, address;
+
     public static void start(Context context) {
         Intent intent = new Intent(context, AddOrderActivity.class);
+        context.startActivity(intent);
+    }
+
+    public static void start(Context context, String projectId, String title, String customerId, String custName, String phoneNum, String address) {
+        Intent intent = new Intent(context, AddOrderActivity.class);
+        intent.putExtra("projectId", projectId);
+        intent.putExtra("title", title);
+        intent.putExtra("customerId", customerId);
+        intent.putExtra("custName", custName);
+        intent.putExtra("phoneNum", phoneNum);
+        intent.putExtra("address", address);
         context.startActivity(intent);
     }
 
@@ -55,7 +71,18 @@ public class AddOrderActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_order);
 
+        projectId = getIntent().getStringExtra("projectId");
+        title = getIntent().getStringExtra("title");
+        customerId = getIntent().getStringExtra("customerId");
+        custName = getIntent().getStringExtra("custName");
+        phoneNum = getIntent().getStringExtra("phoneNum");
+        address = getIntent().getStringExtra("address");
+
         initView();
+
+        if (!TextUtils.isEmpty(projectId)) {
+            getProjectDetail(projectId);
+        }
     }
 
     private void initView() {
@@ -68,6 +95,9 @@ public class AddOrderActivity extends BaseActivity {
         });
 
         final EditText etTitle = (EditText) findViewById(R.id.et_phone_add_order);
+        if (!TextUtils.isEmpty(title)) {
+            etTitle.setText(title);
+        }
         RecyclerView rvCad = (RecyclerView) findViewById(R.id.rv_image_cad_add_order);
         RecyclerView rvInfo = (RecyclerView) findViewById(R.id.rv_image_info_add_order);
         RecyclerView rvTable = (RecyclerView) findViewById(R.id.rv_image_table_add_order);
@@ -95,6 +125,10 @@ public class AddOrderActivity extends BaseActivity {
                     String infoString = jsonToString(infoList);
                     String tableString = jsonToString(tableList);
                     addOrUpadteProject(trim, cadString, infoString, tableString);
+                }
+
+                if (!TextUtils.isEmpty(projectId)) {
+                    addCustomerInfo(projectId, customerId, custName, phoneNum, address);
                 }
             }
         });
@@ -184,8 +218,8 @@ public class AddOrderActivity extends BaseActivity {
         return MultipartBody.Part.createFormData(partName, file.getName(), requestFile);
     }
 
-    private void addOrUpadteProject(String title, String budgetImgs, String cadImgs, String stateImgs) {
-        Call<EmptyResponse> call = NetModel.getInstance().addOrUpadteProject(SettingUtils.instance().getToken(), "", title, budgetImgs, cadImgs, stateImgs);
+    private void addOrUpadteProject(String title, String cadImgs, String budgetImgs, String stateImgs) {
+        Call<EmptyResponse> call = NetModel.getInstance().addOrUpadteProject(SettingUtils.instance().getToken(), projectId, title, cadImgs, budgetImgs, stateImgs);
         call.enqueue(new Callback<EmptyResponse>() {
             @Override
             public void onResponse(Call<EmptyResponse> call, Response<EmptyResponse> response) {
@@ -247,6 +281,7 @@ public class AddOrderActivity extends BaseActivity {
     }
 
     private String jsonToString(List<ImageResponse> list) {
+        list.remove(list.size() - 1);
         Gson gson = new Gson();
         return gson.toJson(list);
     }
@@ -334,6 +369,99 @@ public class AddOrderActivity extends BaseActivity {
                 }
             }
         }
+    }
+
+    //====修改工单信息=====
+    private void getProjectDetail(String projectId) {
+        if (!Utils.isNetworkOn()) {
+            Toast.makeText(this, "网络异常，请检查您的网络！", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Call<ProjectDetailsResponse> call = NetModel.getInstance().getProjectDetail(SettingUtils.instance().getToken(), projectId);
+        call.enqueue(new Callback<ProjectDetailsResponse>() {
+            @Override
+            public void onResponse(Call<ProjectDetailsResponse> call, Response<ProjectDetailsResponse> response) {
+                if (response.body().getCode() == 0) {
+                    ProjectDetailsResponse.DataBean data = response.body().getData();
+                    if (data != null) {
+                        setTop(data);
+                    }
+                } else {
+                    Toast.makeText(AddOrderActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ProjectDetailsResponse> call, Throwable t) {
+                Toast.makeText(AddOrderActivity.this, "网络异常，请检查您的网络！", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void setTop(ProjectDetailsResponse.DataBean data) {
+        getList(cadList, data, 0);
+        cadAdapter.update(cadList);
+        getList(infoList, data, 1);
+        infoAdapter.update(infoList);
+        getList(tableList, data, 2);
+        tableAdapter.update(tableList);
+    }
+
+    private void getList(ArrayList<ImageResponse> list, ProjectDetailsResponse.DataBean data, int type) {
+        if (data != null) {
+            switch (type) {
+                case 0:
+                    List<ProjectDetailsResponse.DataBean.CadImgListBean> cadImgs = data.getCadImgList();
+                    if (cadImgs != null && !cadImgs.isEmpty()) {
+                        for (int i = 0; i < cadImgs.size(); i++) {
+                            ImageResponse response = new ImageResponse(cadImgs.get(i).getImgUrl(), cadImgs.get(i).getWidth(), cadImgs.get(i).getHeight());
+                            list.add(0, response);
+                        }
+                    }else {
+
+                    }
+                    break;
+                case 1:
+                    List<ProjectDetailsResponse.DataBean.BudgetImgListBean> budgetImgs = data.getBudgetImgList();
+                    if (budgetImgs != null && !budgetImgs.isEmpty()) {
+                        for (int i = 0; i < budgetImgs.size(); i++) {
+                            ImageResponse response = new ImageResponse(budgetImgs.get(i).getImgUrl(), budgetImgs.get(i).getWidth(), budgetImgs.get(i).getHeight());
+                            list.add(0, response);
+                        }
+                    }else {
+
+                    }
+                    break;
+                case 2:
+                    List<ProjectDetailsResponse.DataBean.StateImgListBean> stateImages = data.getStateImgList();
+                    if (stateImages != null && !stateImages.isEmpty()) {
+                        for (int i = 0; i < stateImages.size(); i++) {
+                            ImageResponse response = new ImageResponse(stateImages.get(i).getImgUrl(), stateImages.get(i).getWidth(), stateImages.get(i).getHeight());
+                            list.add(0, response);
+                        }
+                    } else {
+
+                    }
+                    break;
+            }
+        }
+    }
+
+    private void addCustomerInfo(String projectId, String customerId, String custName, String phoneNum, String address) {
+        if (!Utils.isNetworkOn()) {
+            Toast.makeText(this, "网络异常，请检查您的网络！", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Call<EmptyResponse> call = NetModel.getInstance().addOrUpadteCustomerInfo(SettingUtils.instance().getToken(), projectId, customerId, custName, phoneNum, address);
+        call.enqueue(new Callback<EmptyResponse>() {
+            @Override
+            public void onResponse(Call<EmptyResponse> call, Response<EmptyResponse> response) {
+            }
+
+            @Override
+            public void onFailure(Call<EmptyResponse> call, Throwable t) {
+            }
+        });
     }
 
 }

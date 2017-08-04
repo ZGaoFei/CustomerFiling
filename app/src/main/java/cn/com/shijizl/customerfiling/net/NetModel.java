@@ -50,8 +50,8 @@ public class NetModel {
         return apiService.resetPassWord(phoneNum, passWord);
     }
 
-    public Call<EmptyResponse> addOrUpadteProject(String accessToken, String projectId, String title, String budgetImgs, String cadImgs, String stateImgs) {
-        return apiService.addOrUpadteProject(accessToken, projectId, title, budgetImgs, cadImgs, stateImgs);
+    public Call<EmptyResponse> addOrUpadteProject(String accessToken, String projectId, String title, String cadImgs, String budgetImgs, String stateImgs) {
+        return apiService.addOrUpadteProject(accessToken, projectId, title, cadImgs, budgetImgs, stateImgs);
     }
 
     public Call<UserInfoResponse> getUserInfo(String accessToken) {
