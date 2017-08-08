@@ -97,4 +97,8 @@ public class NetModel {
     public Call<EmptyResponse> updateUserInfo(String accessToken, String profile, String realName) {
         return apiService.updateUserInfo(accessToken, profile, realName);
     }
+
+    public Call<EmptyResponse> deleteProject(String accessToken, String projectId) {
+        return apiService.deleteProject(accessToken, projectId);
+    }
 }

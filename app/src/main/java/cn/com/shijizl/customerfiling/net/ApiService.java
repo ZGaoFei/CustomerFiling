@@ -147,4 +147,11 @@ public interface ApiService {
             @Field("profile") String profile,
             @Field("realName") String realName
     );
+
+    @FormUrlEncoded
+    @POST("yorkba/app/project/deleteProject")
+    Call<EmptyResponse> deleteProject(
+            @Field("accessToken") String accessToken,
+            @Field("projectId") String projectId
+    );
 }

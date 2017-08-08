@@ -61,6 +61,13 @@ public class LoadMoreAdapter extends RecyclerView.Adapter<LoadMoreAdapter.ViewHo
                 click.onClick(position, v);
             }
         });
+        holder.rlBox.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                click.onLongClick(position, v);
+                return false;
+            }
+        });
     }
 
     @Override
@@ -85,6 +92,7 @@ public class LoadMoreAdapter extends RecyclerView.Adapter<LoadMoreAdapter.ViewHo
 
     public interface ClickListener {
         void onClick(int position, View v);
+        void onLongClick(int position, View v);
     }
 
     public void setOnClickListener(ClickListener click) {

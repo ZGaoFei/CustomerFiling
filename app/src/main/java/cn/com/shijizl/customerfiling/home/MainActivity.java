@@ -1,5 +1,7 @@
 package cn.com.shijizl.customerfiling.home;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -26,6 +28,7 @@ import cn.com.shijizl.customerfiling.home.adapter.LoadMoreAdapter;
 import cn.com.shijizl.customerfiling.me.LoginActivity;
 import cn.com.shijizl.customerfiling.me.MeActivity;
 import cn.com.shijizl.customerfiling.net.NetModel;
+import cn.com.shijizl.customerfiling.net.model.EmptyResponse;
 import cn.com.shijizl.customerfiling.net.model.ProjectListResponse;
 import cn.com.shijizl.customerfiling.net.model.UserInfoResponse;
 import cn.com.shijizl.customerfiling.order.AddOrderActivity;
@@ -99,6 +102,11 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onClick(int position, View v) {
                 OrderDetailsActivity.start(MainActivity.this, String.valueOf(list.get(position).getId()));
+            }
+
+            @Override
+            public void onLongClick(int position, View v) {
+                showDeleteDialog(position);
             }
         });
 
@@ -214,5 +222,61 @@ public class MainActivity extends BaseActivity {
             public void onFailure(Call<UserInfoResponse> call, Throwable t) {
             }
         });
+    }
+
+    private void deleteProject(final int projectId) {
+        if (!Utils.isNetworkOn()) {
+            Toast.makeText(this, "网络异常，请检查您的网络！", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Call<EmptyResponse> call = NetModel.getInstance().deleteProject(SettingUtils.instance().getToken(), String.valueOf(projectId));
+        call.enqueue(new Callback<EmptyResponse>() {
+            @Override
+            public void onResponse(Call<EmptyResponse> call, Response<EmptyResponse> response) {
+                if (response.body() != null) {
+                    if (response.body().getCode() == 0) {
+                        removeProject(projectId);
+                        adapter.updateData(list);
+                        Toast.makeText(MainActivity.this, "删除工单成功", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(MainActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<EmptyResponse> call, Throwable t) {
+                Toast.makeText(MainActivity.this, "删除工单失败", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void showDeleteDialog(final int position) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setMessage("您是否要删除此工单");
+        builder.setTitle("提示");
+        builder.setPositiveButton("删除", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                deleteProject(list.get(position).getId());
+                dialog.dismiss();
+            }
+        });
+        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.create().show();
+    }
+
+    private void removeProject(int projectId) {
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i).getId() == projectId) {
+                list.remove(i);
+                break;
+            }
+        }
     }
 }
