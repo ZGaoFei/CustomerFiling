@@ -1,7 +1,5 @@
 package cn.com.shijizl.customerfiling.home;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -98,6 +96,7 @@ public class MainActivity extends BaseActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new LoadMoreAdapter(this, list);
         recyclerView.setAdapter(adapter);
+
         adapter.setOnClickListener(new LoadMoreAdapter.ClickListener() {
             @Override
             public void onClick(int position, View v) {
@@ -105,14 +104,15 @@ public class MainActivity extends BaseActivity {
             }
 
             @Override
-            public void onLongClick(int position, View v) {
-                showDeleteDialog(position);
+            public void onDeleteClick(int position, View v) {
+                deleteProject(list.get(position).getId(), position);
             }
         });
 
         refreshLayout = (RefreshLayout)findViewById(R.id.smart_refresh_layout_main);
         refreshLayout.setRefreshHeader(new ClassicsHeader(this));
         refreshLayout.setRefreshFooter(new ClassicsFooter(this));
+
         refreshLayout.setOnRefreshListener(new OnRefreshListener() {
             @Override
             public void onRefresh(RefreshLayout refreshlayout) {
@@ -224,7 +224,7 @@ public class MainActivity extends BaseActivity {
         });
     }
 
-    private void deleteProject(final int projectId) {
+    private void deleteProject(final int projectId, final int position) {
         if (!Utils.isNetworkOn()) {
             Toast.makeText(this, "网络异常，请检查您的网络！", Toast.LENGTH_SHORT).show();
             return;
@@ -235,8 +235,8 @@ public class MainActivity extends BaseActivity {
             public void onResponse(Call<EmptyResponse> call, Response<EmptyResponse> response) {
                 if (response.body() != null) {
                     if (response.body().getCode() == 0) {
-                        removeProject(projectId);
-                        adapter.updateData(list);
+                        list.remove(position);
+                        adapter.updateItemPosition(list, position);
                         Toast.makeText(MainActivity.this, "删除工单成功", Toast.LENGTH_SHORT).show();
                     } else {
                         Toast.makeText(MainActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
@@ -249,34 +249,5 @@ public class MainActivity extends BaseActivity {
                 Toast.makeText(MainActivity.this, "删除工单失败", Toast.LENGTH_SHORT).show();
             }
         });
-    }
-
-    private void showDeleteDialog(final int position) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setMessage("您是否要删除此工单");
-        builder.setTitle("提示");
-        builder.setPositiveButton("删除", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                deleteProject(list.get(position).getId());
-                dialog.dismiss();
-            }
-        });
-        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-        builder.create().show();
-    }
-
-    private void removeProject(int projectId) {
-        for (int i = 0; i < list.size(); i++) {
-            if (list.get(i).getId() == projectId) {
-                list.remove(i);
-                break;
-            }
-        }
     }
 }

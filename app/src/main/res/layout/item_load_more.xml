@@ -1,64 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<cn.com.shijizl.customerfiling.home.adapter.SwipeMenuLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#ffffff"
-    android:orientation="vertical">
+    android:clickable="true"
+    android:orientation="horizontal">
 
-    <RelativeLayout
-        android:id="@+id/rl_item_box"
+    <LinearLayout
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:id="@+id/rl_item_box"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_marginLeft="10dp">
+
+            <TextView
+                android:id="@+id/tv_title_item"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="15dp"
+                android:text="工单001"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_speed_title_item"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="15dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="15dp"
+                android:text="施工进度："
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/tv_speed_item"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="15dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="15dp"
+                android:layout_toRightOf="@+id/tv_speed_title_item"
+                android:text="施工进度"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/tv_time_item"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="20dp"
+                android:text="20170719"
+                android:textSize="15sp" />
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#d7dcdc" />
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/rl_item_delete"
+        android:layout_width="100dp"
         android:layout_height="80dp"
-        android:layout_marginLeft="10dp">
+        android:layout_marginBottom="4dp"
+        android:layout_marginRight="4dp"
+        android:background="#f33213">
 
         <TextView
-            android:id="@+id/tv_title_item"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="15dp"
-            android:layout_marginTop="15dp"
-            android:text="工单001"
-            android:textStyle="bold"
-            android:textSize="15sp" />
+            android:layout_gravity="center"
+            android:text="删除"
+            android:textColor="#ffffff"
+            android:textSize="18sp" />
+    </FrameLayout>
 
-        <TextView
-            android:id="@+id/tv_speed_title_item"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="15dp"
-            android:layout_marginLeft="15dp"
-            android:layout_marginTop="15dp"
-            android:text="施工进度："
-            android:textSize="15sp" />
-
-        <TextView
-            android:id="@+id/tv_speed_item"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="15dp"
-            android:layout_marginLeft="5dp"
-            android:layout_marginTop="15dp"
-            android:layout_toRightOf="@+id/tv_speed_title_item"
-            android:text="施工进度"
-            android:textSize="15sp" />
-
-        <TextView
-            android:id="@+id/tv_time_item"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="20170719"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="20dp"
-            android:textSize="15sp" />
-
-    </RelativeLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="#d7dcdc" />
-
-</LinearLayout>
+</cn.com.shijizl.customerfiling.home.adapter.SwipeMenuLayout>

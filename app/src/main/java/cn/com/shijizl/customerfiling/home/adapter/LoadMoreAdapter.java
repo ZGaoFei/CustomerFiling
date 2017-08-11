@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -31,10 +32,12 @@ public class LoadMoreAdapter extends RecyclerView.Adapter<LoadMoreAdapter.ViewHo
         notifyDataSetChanged();
     }
 
-    public void updateMoreData(List<ProjectListResponse.DataBean> list) {
-        int length = this.list.size();
-        this.list.addAll(list);
-        notifyItemRangeChanged(length - 1, list.size() - length - 1);
+    public void updateItemPosition(List<ProjectListResponse.DataBean> list, int position) {
+        this.list = list;
+        notifyItemRemoved(position);
+        if (position != list.size()) {
+            notifyItemRangeChanged(position, list.size() - position);
+        }
     }
 
     @Override
@@ -61,11 +64,10 @@ public class LoadMoreAdapter extends RecyclerView.Adapter<LoadMoreAdapter.ViewHo
                 click.onClick(position, v);
             }
         });
-        holder.rlBox.setOnLongClickListener(new View.OnLongClickListener() {
+        holder.frameLayout.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onLongClick(View v) {
-                click.onLongClick(position, v);
-                return false;
+            public void onClick(View v) {
+                click.onDeleteClick(position, v);
             }
         });
     }
@@ -80,19 +82,21 @@ public class LoadMoreAdapter extends RecyclerView.Adapter<LoadMoreAdapter.ViewHo
         private TextView tvTitle;
         private TextView tvTime;
         private TextView tvSpeed;
+        private FrameLayout frameLayout;
 
-        public ViewHolder(View itemView) {
+        ViewHolder(View itemView) {
             super(itemView);
             rlBox = (RelativeLayout) itemView.findViewById(R.id.rl_item_box);
             tvTitle = (TextView) itemView.findViewById(R.id.tv_title_item);
             tvTime = (TextView) itemView.findViewById(R.id.tv_time_item);
             tvSpeed = (TextView) itemView.findViewById(R.id.tv_speed_item);
+            frameLayout = (FrameLayout) itemView.findViewById(R.id.rl_item_delete);
         }
     }
 
     public interface ClickListener {
         void onClick(int position, View v);
-        void onLongClick(int position, View v);
+        void onDeleteClick(int position, View v);
     }
 
     public void setOnClickListener(ClickListener click) {
