@@ -81,18 +81,20 @@ public class LoginActivity extends BaseActivity{
         login.enqueue(new Callback<RegisterResponse>() {
             @Override
             public void onResponse(Call<RegisterResponse> call, Response<RegisterResponse> response) {
-                if (response.body().getCode() == 0) {
-                    RegisterResponse.DataBean data = response.body().getData();
-                    if (data != null) {
-                        String accessToken = data.getAccessToken();
-                        int userId = data.getUserId();
-                        SettingUtils.instance().saveToken(accessToken);
-                        SettingUtils.instance().saveUserId(userId);
+                if (response.body() != null) {
+                    if (response.body().getCode() == 0) {
+                        RegisterResponse.DataBean data = response.body().getData();
+                        if (data != null) {
+                            String accessToken = data.getAccessToken();
+                            int userId = data.getUserId();
+                            SettingUtils.instance().saveToken(accessToken);
+                            SettingUtils.instance().saveUserId(userId);
 
-                        finish();
+                            finish();
+                        }
+                    } else {
+                        Toast.makeText(LoginActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
                     }
-                } else {
-                    Toast.makeText(LoginActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
 

@@ -9,7 +9,9 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitHelper {
-    private static final String BASE_URL = "http://47.93.27.79/";
+    private static final String BASE_URL_RELEASE = "http://cli.yorkba.cn/";
+    private static final String BASE_URL_DEBUG = "http://47.93.27.79/";
+    private static final String BASE_URL = BASE_URL_DEBUG;
 
     private static RetrofitHelper mHelper;
     private static Retrofit mRetrofit;
@@ -59,11 +61,11 @@ public class RetrofitHelper {
                 .build();
     }
 
-    public static <T> T createApi(Class<T> clz) {
+    static <T> T createApi(Class<T> clz) {
         return mRetrofit.create(clz);
     }
 
-    public static <T> T createUploadsApi(Class<T> clz) {
+    static <T> T createUploadsApi(Class<T> clz) {
         return mRetrofitUploads.create(clz);
     }
 

@@ -124,25 +124,27 @@ public class MeActivity extends BaseActivity {
         call.enqueue(new Callback<UserInfoResponse>() {
             @Override
             public void onResponse(Call<UserInfoResponse> call, Response<UserInfoResponse> response) {
-                if (response.body().getCode() == 0) {
-                    UserInfoResponse.DataBean data = response.body().getData();
-                    if (data != null) {
-                        if (isFirst) {
-                            isFirst = false;
-                            imageUrl = data.getProfile();
-                            Glide.with(MeActivity.this)
-                                    .load(data.getProfile())
-                                    .override(200, 200)
-                                    .bitmapTransform(new GlideCircleTransform(MeActivity.this))
-                                    .crossFade(1000)
-                                    .into(ivHeader);
+                if (response.body() != null) {
+                    if (response.body().getCode() == 0) {
+                        UserInfoResponse.DataBean data = response.body().getData();
+                        if (data != null) {
+                            if (isFirst) {
+                                isFirst = false;
+                                imageUrl = data.getProfile();
+                                Glide.with(MeActivity.this)
+                                        .load(data.getProfile())
+                                        .override(200, 200)
+                                        .bitmapTransform(new GlideCircleTransform(MeActivity.this))
+                                        .crossFade(1000)
+                                        .into(ivHeader);
+                            }
+                            tvName.setText(data.getUserName());
+                            tvNick.setText(data.getRealName());
+                            name = data.getRealName();
                         }
-                        tvName.setText(data.getUserName());
-                        tvNick.setText(data.getRealName());
-                        name = data.getRealName();
+                    } else {
+                        Toast.makeText(MeActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
                     }
-                } else {
-                    Toast.makeText(MeActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -235,17 +237,18 @@ public class MeActivity extends BaseActivity {
         call.enqueue(new Callback<UpdateImageResponse>() {
             @Override
             public void onResponse(Call<UpdateImageResponse> call, Response<UpdateImageResponse> response) {
+                if (response.body() != null) {
+                    if (response.body().getCode() == 0) {
+                        UpdateImageResponse.DataBean data = response.body().getData();
+                        if (data != null) {
+                            imageUrl = data.getUrl();
+                            Toast.makeText(MeActivity.this, "上传图片成功", Toast.LENGTH_SHORT).show();
 
-                if (response.body().getCode() == 0) {
-                    UpdateImageResponse.DataBean data = response.body().getData();
-                    if (data != null) {
-                        imageUrl = data.getUrl();
-                        Toast.makeText(MeActivity.this, "上传图片成功", Toast.LENGTH_SHORT).show();
-
-                        updateUserInfo(imageUrl, name);
+                            updateUserInfo(imageUrl, name);
+                        }
+                    } else {
+                        Toast.makeText(MeActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
                     }
-                } else {
-                    Toast.makeText(MeActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -271,10 +274,12 @@ public class MeActivity extends BaseActivity {
         call.enqueue(new Callback<EmptyResponse>() {
             @Override
             public void onResponse(Call<EmptyResponse> call, Response<EmptyResponse> response) {
-                if (response.body().getCode() == 0) {
-                    Toast.makeText(MeActivity.this, "更新用户信息成功", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(MeActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                if (response.body() != null) {
+                    if (response.body().getCode() == 0) {
+                        Toast.makeText(MeActivity.this, "更新用户信息成功", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(MeActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
 

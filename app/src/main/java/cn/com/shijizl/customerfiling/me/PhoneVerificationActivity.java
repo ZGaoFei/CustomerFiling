@@ -99,17 +99,19 @@ public class PhoneVerificationActivity extends BaseActivity {
         code.enqueue(new Callback<CodeResponse>() {
             @Override
             public void onResponse(Call<CodeResponse> call, Response<CodeResponse> response) {
-                if (response.body().getCode() == 0) {
-                    CodeResponse body = response.body();
-                    CodeResponse.DataBean data = body.getData();
-                    if (data != null) {
-                        startTime();
-                        codeNum = data.getVerifyCode();
-                        tvCode.setVisibility(View.VISIBLE);
-                        tvCode.setText("短信验证码已发送至：" + phone);
+                if (response.body() != null) {
+                    if (response.body().getCode() == 0) {
+                        CodeResponse body = response.body();
+                        CodeResponse.DataBean data = body.getData();
+                        if (data != null) {
+                            startTime();
+                            codeNum = data.getVerifyCode();
+                            tvCode.setVisibility(View.VISIBLE);
+                            tvCode.setText("短信验证码已发送至：" + phone);
+                        }
+                    } else {
+                        Toast.makeText(PhoneVerificationActivity.this, response.message(), Toast.LENGTH_SHORT).show();
                     }
-                } else {
-                    Toast.makeText(PhoneVerificationActivity.this, response.message(), Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -129,18 +131,20 @@ public class PhoneVerificationActivity extends BaseActivity {
         register.enqueue(new Callback<RegisterResponse>() {
             @Override
             public void onResponse(Call<RegisterResponse> call, Response<RegisterResponse> response) {
-                if (response.body().getCode() == 0) {
-                    RegisterResponse body = response.body();
-                    if (body != null) {
-                        String accessToken = body.getData().getAccessToken();
-                        int userId = body.getData().getUserId();
-                        SettingUtils.instance().saveToken(accessToken);
-                        SettingUtils.instance().saveUserId(userId);
-                        Toast.makeText(PhoneVerificationActivity.this, "注册成功，请登录", Toast.LENGTH_SHORT).show();
-                        LoginActivity.start(PhoneVerificationActivity.this);
+                if (response.body() != null) {
+                    if (response.body().getCode() == 0) {
+                        RegisterResponse body = response.body();
+                        if (body != null) {
+                            String accessToken = body.getData().getAccessToken();
+                            int userId = body.getData().getUserId();
+                            SettingUtils.instance().saveToken(accessToken);
+                            SettingUtils.instance().saveUserId(userId);
+                            Toast.makeText(PhoneVerificationActivity.this, "注册成功，请登录", Toast.LENGTH_SHORT).show();
+                            LoginActivity.start(PhoneVerificationActivity.this);
+                        }
+                    } else {
+                        Toast.makeText(PhoneVerificationActivity.this, response.message(), Toast.LENGTH_SHORT).show();
                     }
-                } else {
-                    Toast.makeText(PhoneVerificationActivity.this, response.message(), Toast.LENGTH_SHORT).show();
                 }
             }
 
