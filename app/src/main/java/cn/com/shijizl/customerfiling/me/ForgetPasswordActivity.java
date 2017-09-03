@@ -16,6 +16,7 @@ import cn.com.shijizl.customerfiling.R;
 import cn.com.shijizl.customerfiling.base.BaseActivity;
 import cn.com.shijizl.customerfiling.net.NetModel;
 import cn.com.shijizl.customerfiling.net.model.CodeResponse;
+import cn.com.shijizl.customerfiling.net.model.EmptyResponse;
 import cn.com.shijizl.customerfiling.utils.Utils;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -61,10 +62,8 @@ public class ForgetPasswordActivity extends BaseActivity {
                 if (checkPhone(phone)) {
                     if (TextUtils.isEmpty(code)) {
                         Toast.makeText(ForgetPasswordActivity.this, "请输入正确的验证码", Toast.LENGTH_SHORT).show();
-                    } else if (code.equals(String.valueOf(codeNum))){
-                        ForgetPasswordNextActivity.start(ForgetPasswordActivity.this, phone);
                     } else {
-                        Toast.makeText(ForgetPasswordActivity.this, "请输入正确的验证码", Toast.LENGTH_SHORT).show();
+                        getWebCode(phone, code);
                     }
                 }
             }
@@ -97,6 +96,7 @@ public class ForgetPasswordActivity extends BaseActivity {
 
     private void getCode(String phone) {
         if (!Utils.isNetworkOn()) {
+            btGetCode.setEnabled(true);
             Toast.makeText(this, "网络异常，请检查您的网络！", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -112,13 +112,35 @@ public class ForgetPasswordActivity extends BaseActivity {
                         codeNum = data.getVerifyCode();
                     }
                 } else {
+                    btGetCode.setEnabled(true);
                     Toast.makeText(ForgetPasswordActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<CodeResponse> call, Throwable t) {
+                btGetCode.setEnabled(true);
                 Toast.makeText(ForgetPasswordActivity.this, "获取验证码错误，请稍后重试！", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void getWebCode(final String phone, String codeNum) {
+        final Call<EmptyResponse> code = NetModel.getInstance().checkVerifyCode(phone, codeNum);
+        code.enqueue(new Callback<EmptyResponse>() {
+            @Override
+            public void onResponse(Call<EmptyResponse> call, Response<EmptyResponse> response) {
+                if (response.body() != null) {
+                    if (response.body().getCode() == 0) {
+                        ForgetPasswordNextActivity.start(ForgetPasswordActivity.this, phone);
+                    } else {
+                        Toast.makeText(ForgetPasswordActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<EmptyResponse> call, Throwable t) {
             }
         });
     }

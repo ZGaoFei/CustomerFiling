@@ -154,4 +154,10 @@ public interface ApiService {
             @Field("accessToken") String accessToken,
             @Field("projectId") String projectId
     );
+
+    @GET("yorkba/app/user/checkVerifyCode")
+    Call<EmptyResponse> checkVerifyCode(
+            @Query("phoneNum") String phoneNum,
+            @Query("code") String code
+    );
 }

@@ -162,6 +162,12 @@ public class ProjectSpeedActivity extends BaseActivity {
     }
 
     private void checkData() {
+        if (list == null || list.isEmpty()) {
+            return;
+        }
+        if (listProject == null || listProject.isEmpty()) {
+            return;
+        }
         int result = -1;
         for (int i = 0; i < list.size(); i++) {
             for (int j = 0; j < listProject.size(); j++) {

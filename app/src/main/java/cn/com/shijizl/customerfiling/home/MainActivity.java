@@ -11,6 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.footer.ClassicsFooter;
 import com.scwang.smartrefresh.layout.header.ClassicsHeader;
@@ -39,7 +40,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MainActivity extends BaseActivity {
-    private RefreshLayout refreshLayout;
+    private SmartRefreshLayout refreshLayout;
     private List<ProjectListResponse.DataBean> list = new ArrayList<>();
     private LoadMoreAdapter adapter;
     private int size;
@@ -109,7 +110,7 @@ public class MainActivity extends BaseActivity {
             }
         });
 
-        refreshLayout = (RefreshLayout)findViewById(R.id.smart_refresh_layout_main);
+        refreshLayout = (SmartRefreshLayout)findViewById(R.id.smart_refresh_layout_main);
         refreshLayout.setRefreshHeader(new ClassicsHeader(this));
         refreshLayout.setRefreshFooter(new ClassicsFooter(this));
 
@@ -148,13 +149,16 @@ public class MainActivity extends BaseActivity {
                             list.addAll(data);
                             adapter.updateData(list);
                             refreshLayout.finishRefresh();
+                            refreshLayout.setVisibility(View.VISIBLE);
                             llEmpty.setVisibility(View.GONE);
                         } else {
+                            refreshLayout.finishRefresh();
+                            refreshLayout.setVisibility(View.GONE);
                             llEmpty.setVisibility(View.VISIBLE);
                         }
                     } else {
                         Toast.makeText(MainActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
-                        llEmpty.setVisibility(View.GONE);
+                        llEmpty.setVisibility(View.VISIBLE);
                     }
                 }
             }
@@ -206,12 +210,14 @@ public class MainActivity extends BaseActivity {
                     if (response.body().getCode() == 0) {
                         UserInfoResponse.DataBean data = response.body().getData();
                         if (data != null) {
-                            Glide.with(MainActivity.this)
-                                    .load(data.getProfile())
-                                    .override(200, 200)
-                                    .bitmapTransform(new GlideCircleTransform(MainActivity.this))
-                                    .crossFade(1000)
-                                    .into(ivUser);
+                            if (!TextUtils.isEmpty(data.getProfile())) {
+                                Glide.with(MainActivity.this)
+                                        .load(data.getProfile())
+                                        .override(200, 200)
+                                        .bitmapTransform(new GlideCircleTransform(MainActivity.this))
+                                        .crossFade(1000)
+                                        .into(ivUser);
+                            }
                         }
                     } else {
                     }

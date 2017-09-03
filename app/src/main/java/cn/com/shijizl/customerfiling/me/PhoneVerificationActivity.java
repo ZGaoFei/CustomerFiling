@@ -17,6 +17,7 @@ import cn.com.shijizl.customerfiling.R;
 import cn.com.shijizl.customerfiling.base.BaseActivity;
 import cn.com.shijizl.customerfiling.net.NetModel;
 import cn.com.shijizl.customerfiling.net.model.CodeResponse;
+import cn.com.shijizl.customerfiling.net.model.EmptyResponse;
 import cn.com.shijizl.customerfiling.net.model.RegisterResponse;
 import cn.com.shijizl.customerfiling.utils.SettingUtils;
 import cn.com.shijizl.customerfiling.utils.Utils;
@@ -76,10 +77,8 @@ public class PhoneVerificationActivity extends BaseActivity {
                 String trim = etCode.getText().toString().trim();
                 if (TextUtils.isEmpty(trim)) {
                     Toast.makeText(PhoneVerificationActivity.this, "请输入正确的验证码", Toast.LENGTH_SHORT).show();
-                } else if (trim.equals(String.valueOf(codeNum))){
-                    register();
                 } else {
-                    Toast.makeText(PhoneVerificationActivity.this, "请输入正确的验证码", Toast.LENGTH_SHORT).show();
+                    getWebCode(trim);
                 }
             }
         });
@@ -93,6 +92,7 @@ public class PhoneVerificationActivity extends BaseActivity {
     private void getCode() {
         if (!Utils.isNetworkOn()) {
             Toast.makeText(this, "网络异常，请检查您的网络！", Toast.LENGTH_SHORT).show();
+            btGetCode.setEnabled(true);
             return;
         }
         final Call<CodeResponse> code = NetModel.getInstance().getCode(phone);
@@ -110,6 +110,7 @@ public class PhoneVerificationActivity extends BaseActivity {
                             tvCode.setText("短信验证码已发送至：" + phone);
                         }
                     } else {
+                        btGetCode.setEnabled(true);
                         Toast.makeText(PhoneVerificationActivity.this, response.message(), Toast.LENGTH_SHORT).show();
                     }
                 }
@@ -117,6 +118,7 @@ public class PhoneVerificationActivity extends BaseActivity {
 
             @Override
             public void onFailure(Call<CodeResponse> call, Throwable t) {
+                btGetCode.setEnabled(true);
                 Toast.makeText(PhoneVerificationActivity.this, "获取验证码错误，请稍后重试！", Toast.LENGTH_SHORT).show();
             }
         });
@@ -151,6 +153,26 @@ public class PhoneVerificationActivity extends BaseActivity {
             @Override
             public void onFailure(Call<RegisterResponse> call, Throwable t) {
                 Toast.makeText(PhoneVerificationActivity.this, "提交失败，请稍后重试！", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void getWebCode(String codeNum) {
+        final Call<EmptyResponse> code = NetModel.getInstance().checkVerifyCode(phone, codeNum);
+        code.enqueue(new Callback<EmptyResponse>() {
+            @Override
+            public void onResponse(Call<EmptyResponse> call, Response<EmptyResponse> response) {
+                if (response.body() != null) {
+                    if (response.body().getCode() == 0) {
+                        register();
+                    } else {
+                        Toast.makeText(PhoneVerificationActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<EmptyResponse> call, Throwable t) {
             }
         });
     }

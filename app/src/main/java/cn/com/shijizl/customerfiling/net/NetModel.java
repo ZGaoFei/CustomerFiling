@@ -101,4 +101,8 @@ public class NetModel {
     public Call<EmptyResponse> deleteProject(String accessToken, String projectId) {
         return apiService.deleteProject(accessToken, projectId);
     }
+
+    public Call<EmptyResponse> checkVerifyCode(String phoneNum, String code) {
+        return apiService.checkVerifyCode(phoneNum, code);
+    }
 }

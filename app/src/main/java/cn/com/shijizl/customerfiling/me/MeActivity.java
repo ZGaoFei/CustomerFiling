@@ -10,6 +10,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -131,12 +132,14 @@ public class MeActivity extends BaseActivity {
                             if (isFirst) {
                                 isFirst = false;
                                 imageUrl = data.getProfile();
-                                Glide.with(MeActivity.this)
-                                        .load(data.getProfile())
-                                        .override(200, 200)
-                                        .bitmapTransform(new GlideCircleTransform(MeActivity.this))
-                                        .crossFade(1000)
-                                        .into(ivHeader);
+                                if (!TextUtils.isEmpty(data.getProfile())) {
+                                    Glide.with(MeActivity.this)
+                                            .load(data.getProfile())
+                                            .override(200, 200)
+                                            .bitmapTransform(new GlideCircleTransform(MeActivity.this))
+                                            .crossFade(1000)
+                                            .into(ivHeader);
+                                }
                             }
                             tvName.setText(data.getUserName());
                             tvNick.setText(data.getRealName());

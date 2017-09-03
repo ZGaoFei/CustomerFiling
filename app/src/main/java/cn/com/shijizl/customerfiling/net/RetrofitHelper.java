@@ -9,9 +9,9 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitHelper {
-    private static final String BASE_URL_RELEASE = "http://cli.yorkba.cn/";
+    private static final String BASE_URL_RELEASE = "http://59.110.233.135/";
     private static final String BASE_URL_DEBUG = "http://47.93.27.79/";
-    private static final String BASE_URL = BASE_URL_DEBUG;
+    private static final String BASE_URL = BASE_URL_RELEASE;
 
     private static RetrofitHelper mHelper;
     private static Retrofit mRetrofit;
