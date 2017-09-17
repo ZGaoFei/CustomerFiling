@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -39,6 +40,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class AddOrderActivity extends BaseActivity {
+    private ProgressBar progressBar;
+
     private ArrayList<ImageResponse> cadList = new ArrayList<>();
     private ArrayList<ImageResponse> infoList = new ArrayList<>();
     private ArrayList<ImageResponse> tableList = new ArrayList<>();
@@ -86,6 +89,7 @@ public class AddOrderActivity extends BaseActivity {
     }
 
     private void initView() {
+        progressBar = (ProgressBar) findViewById(R.id.pb_add_order);
         ImageView ivBack = (ImageView) findViewById(R.id.iv_back_add_order);
         ivBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -186,6 +190,8 @@ public class AddOrderActivity extends BaseActivity {
             return;
         }
 
+        progressBar.setVisibility(View.VISIBLE);
+
         File file = new File(url);
 
         MultipartBody.Part body = prepareFilePart(file.getName(), file);
@@ -194,7 +200,7 @@ public class AddOrderActivity extends BaseActivity {
         call.enqueue(new Callback<UpdateImageResponse>() {
             @Override
             public void onResponse(Call<UpdateImageResponse> call, Response<UpdateImageResponse> response) {
-
+                progressBar.setVisibility(View.GONE);
                 if (response.body().getCode() == 0) {
                     UpdateImageResponse.DataBean data = response.body().getData();
                     if (data != null) {
@@ -207,6 +213,7 @@ public class AddOrderActivity extends BaseActivity {
 
             @Override
             public void onFailure(Call<UpdateImageResponse> call, Throwable t) {
+                progressBar.setVisibility(View.GONE);
                 Toast.makeText(AddOrderActivity.this, "上传图片失败，请重试", Toast.LENGTH_SHORT).show();
             }
         });
