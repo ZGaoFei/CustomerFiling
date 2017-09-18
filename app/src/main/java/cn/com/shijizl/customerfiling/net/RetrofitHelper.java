@@ -50,8 +50,8 @@ public class RetrofitHelper {
         //上传文件使用
         OkHttpClient client2 = new OkHttpClient.Builder()
                 .retryOnConnectionFailure(true)
-                .connectTimeout(50_000, TimeUnit.MILLISECONDS)
-                .readTimeout(50_000, TimeUnit.MILLISECONDS)
+                .connectTimeout(50_000, TimeUnit.SECONDS)
+                .readTimeout(50_000, TimeUnit.SECONDS)
                 .build();
 
         mRetrofitUploads = new Retrofit.Builder()
