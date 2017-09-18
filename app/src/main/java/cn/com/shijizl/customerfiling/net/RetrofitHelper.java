@@ -35,9 +35,9 @@ public class RetrofitHelper {
     private RetrofitHelper() {
         OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(new SecurityInterceptor())
-                .connectTimeout(10_000, TimeUnit.SECONDS)
-                .readTimeout(10_000, TimeUnit.SECONDS)
-                .writeTimeout(10_000, TimeUnit.SECONDS)
+                .connectTimeout(10_000, TimeUnit.MILLISECONDS)
+                .readTimeout(10_000, TimeUnit.MILLISECONDS)
+                .writeTimeout(10_000, TimeUnit.MILLISECONDS)
                 .retryOnConnectionFailure(true)
                 .build();
 
@@ -50,8 +50,8 @@ public class RetrofitHelper {
         //上传文件使用
         OkHttpClient client2 = new OkHttpClient.Builder()
                 .retryOnConnectionFailure(true)
-                .connectTimeout(50_000, TimeUnit.SECONDS)
-                .readTimeout(50_000, TimeUnit.SECONDS)
+                .connectTimeout(50_000, TimeUnit.MILLISECONDS)
+                .readTimeout(50_000, TimeUnit.MILLISECONDS)
                 .build();
 
         mRetrofitUploads = new Retrofit.Builder()
